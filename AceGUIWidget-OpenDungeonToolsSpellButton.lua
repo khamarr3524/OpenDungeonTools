@@ -1,4 +1,4 @@
-local Type, Version = "MDTSpellButton", 1
+local Type, Version = "ODTSpellButton", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 
 local width,height = 248,32
@@ -109,7 +109,7 @@ local methods = {
 
 --Constructor
 local function Constructor()
-    local name = "MDTSpellButton"..AceGUI:GetNextWidgetNum(Type);
+    local name = "ODTSpellButton"..AceGUI:GetNextWidgetNum(Type);
     local button = CreateFrame("BUTTON", name, UIParent, "OptionsListButtonTemplate");
     button:SetHeight(height);
     button:SetWidth(width);

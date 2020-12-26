@@ -1,5 +1,5 @@
-local MDT = MDT
-local L = MDT.L
+local ODT = ODT
+local L = ODT.L
 local Compresser = LibStub:GetLibrary("LibCompress")
 local Encoder = Compresser:GetAddonEncodeTable()
 local Serializer = LibStub:GetLibrary("AceSerializer-3.0")
@@ -15,7 +15,7 @@ local configForDeflate = {
     [8]= {level = 8},
     [9]= {level = 9},
 }
-MDTcommsObject = LibStub("AceAddon-3.0"):NewAddon("MDTCommsObject","AceComm-3.0","AceSerializer-3.0")
+ODTcommsObject = LibStub("AceAddon-3.0"):NewAddon("ODTCommsObject","AceComm-3.0","AceSerializer-3.0")
 
 -- Lua APIs
 local tostring, string_char, strsplit,tremove,tinsert = tostring, string.char, strsplit,table.remove,table.insert
@@ -75,7 +75,7 @@ function decodeB64(str)
     return table.concat(bit8, "", 1, decoded_size)
 end
 
-function MDT:TableToString(inTable, forChat,level)
+function ODT:TableToString(inTable, forChat,level)
     local serialized = Serializer:Serialize(inTable)
     local compressed = LibDeflate:CompressDeflate(serialized, configForDeflate[level])
     -- prepend with "!" so that we know that it is not a legacy compression
@@ -89,7 +89,7 @@ function MDT:TableToString(inTable, forChat,level)
     return encoded
 end
 
-function MDT:StringToTable(inString, fromChat)
+function ODT:StringToTable(inString, fromChat)
     -- if gsub strips off a ! at the beginning then we know that this is not a legacy encoding
     local encoded, usesDeflate = inString:gsub("^%!", "")
     local decoded
@@ -133,18 +133,18 @@ local function filterFunc(_, event, msg, player, l, cs, t, flag, channelId, ...)
     local done
     repeat
         local start, finish, characterName, displayName = remaining:find("%[MythicDungeonTools: ([^%s]+) %- ([^%]]+)%]")
-        local startLive, finishLive, characterNameLive, displayNameLive = remaining:find("%[MDTLive: ([^%s]+) %- ([^%]]+)%]")
+        local startLive, finishLive, characterNameLive, displayNameLive = remaining:find("%[ODTLive: ([^%s]+) %- ([^%]]+)%]")
         if(characterName and displayName) then
             characterName = characterName:gsub("|c[Ff][Ff]......", ""):gsub("|r", "")
             displayName = displayName:gsub("|c[Ff][Ff]......", ""):gsub("|r", "")
             newMsg = newMsg..remaining:sub(1, start-1)
-            newMsg = "|cfff49d38|Hgarrmission:mdt-"..characterName.."|h["..displayName.."]|h|r"
+            newMsg = "|cfff49d38|Hgarrmission:ODT-"..characterName.."|h["..displayName.."]|h|r"
             remaining = remaining:sub(finish + 1)
         elseif (characterNameLive and displayNameLive) then
             characterNameLive = characterNameLive:gsub("|c[Ff][Ff]......", ""):gsub("|r", "")
             displayNameLive = displayNameLive:gsub("|c[Ff][Ff]......", ""):gsub("|r", "")
             newMsg = newMsg..remaining:sub(1, startLive-1)
-            newMsg = newMsg.."|Hgarrmission:mdtlive-"..characterNameLive.."|h[".."|cFF00FF00Live Session: |cfff49d38"..""..displayNameLive.."]|h|r"
+            newMsg = newMsg.."|Hgarrmission:ODTlive-"..characterNameLive.."|h[".."|cFF00FF00Live Session: |cfff49d38"..""..displayNameLive.."]|h|r"
             remaining = remaining:sub(finishLive + 1)
         else
             done = true
@@ -155,42 +155,42 @@ local function filterFunc(_, event, msg, player, l, cs, t, flag, channelId, ...)
     end
 end
 
-local presetCommPrefix = "MDTPreset"
+local presetCommPrefix = "ODTPreset"
 
-MDT.liveSessionPrefixes = {
-    ["enabled"] = "MDTLiveEnabled",
-    ["request"] = "MDTLiveReq",
-    ["ping"] = "MDTLivePing",
-    ["obj"] = "MDTLiveObj",
-    ["objOff"] = "MDTLiveObjOff",
-    ["objChg"] = "MDTLiveObjChg",
-    ["cmd"] = "MDTLiveCmd",
-    ["note"] = "MDTLiveNote",
-    ["preset"] = "MDTLivePreset",
-    ["pull"] = "MDTLivePull",
-    ["week"] = "MDTLiveWeek",
-    ["free"] = "MDTLiveFree",
-    ["bora"] = "MDTLiveBora",
-    ["mdi"] = "MDTLiveMDI",
-    ["reqPre"] = "MDTLiveReqPre",
-    ["corrupted"] = "MDTLiveCor",
-    ["difficulty"] = "MDTLiveLvl",
+ODT.liveSessionPrefixes = {
+    ["enabled"] = "ODTLiveEnabled",
+    ["request"] = "ODTLiveReq",
+    ["ping"] = "ODTLivePing",
+    ["obj"] = "ODTLiveObj",
+    ["objOff"] = "ODTLiveObjOff",
+    ["objChg"] = "ODTLiveObjChg",
+    ["cmd"] = "ODTLiveCmd",
+    ["note"] = "ODTLiveNote",
+    ["preset"] = "ODTLivePreset",
+    ["pull"] = "ODTLivePull",
+    ["week"] = "ODTLiveWeek",
+    ["free"] = "ODTLiveFree",
+    ["bora"] = "ODTLiveBora",
+    ["mdi"] = "ODTLiveMDI",
+    ["reqPre"] = "ODTLiveReqPre",
+    ["corrupted"] = "ODTLiveCor",
+    ["difficulty"] = "ODTLiveLvl",
 }
 
-MDT.dataCollectionPrefixes = {
-    ["request"] = "MDTDataReq",
-    ["distribute"] = "MDTDataDist",
+ODT.dataCollectionPrefixes = {
+    ["request"] = "ODTDataReq",
+    ["distribute"] = "ODTDataDist",
 }
 
-function MDTcommsObject:OnEnable()
+function ODTcommsObject:OnEnable()
     self:RegisterComm(presetCommPrefix)
-    for _,prefix in pairs(MDT.liveSessionPrefixes) do
+    for _,prefix in pairs(ODT.liveSessionPrefixes) do
         self:RegisterComm(prefix)
     end
-    for _,prefix in pairs(MDT.dataCollectionPrefixes) do
+    for _,prefix in pairs(ODT.dataCollectionPrefixes) do
         self:RegisterComm(prefix)
     end
-    MDT.transmissionCache = {}
+    ODT.transmissionCache = {}
     ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", filterFunc)
     ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", filterFunc)
     ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", filterFunc)
@@ -199,21 +199,21 @@ end
 
 --handle preset chat link clicks
 hooksecurefunc("SetItemRef", function(link, text)
-    if(link and link:sub(0, 19) == "garrmission:mdtlive") then
+    if(link and link:sub(0, 19) == "garrmission:ODTlive") then
         local sender = link:sub(21, string.len(link))
         local name,realm = string.match(sender,"(.*)+(.*)")
         sender = name.."-"..realm
-        --ignore importing the live preset when sender is player, open MDT only
+        --ignore importing the live preset when sender is player, open ODT only
         local playerName,playerRealm = UnitFullName("player")
         playerName = playerName.."-"..playerRealm
         if sender==playerName then
-            MDT:ShowInterface(true)
+            ODT:ShowInterface(true)
         else
-            MDT:ShowInterface(true)
-            MDT:LiveSession_Enable()
+            ODT:ShowInterface(true)
+            ODT:LiveSession_Enable()
         end
         return
-    elseif (link and link:sub(0, 15) == "garrmission:mdt") then
+    elseif (link and link:sub(0, 15) == "garrmission:ODT") then
         local sender = link:sub(17, string.len(link))
         local name,realm = string.match(sender,"(.*)+(.*)")
         if (not name) or (not realm) then
@@ -221,16 +221,16 @@ hooksecurefunc("SetItemRef", function(link, text)
             return
         end
         sender = name.."-"..realm
-        local preset = MDT.transmissionCache[sender]
+        local preset = ODT.transmissionCache[sender]
         if preset then
-            MDT:ShowInterface(true)
-            MDT:OpenChatImportPresetDialog(sender,preset)
+            ODT:ShowInterface(true)
+            ODT:OpenChatImportPresetDialog(sender,preset)
         end
         return
     end
 end)
 
-function MDTcommsObject:OnCommReceived(prefix, message, distribution, sender)
+function ODTcommsObject:OnCommReceived(prefix, message, distribution, sender)
     --[[
         Sender has no realm name attached when sender is from the same realm as the player
         UnitFullName("Nnoggie") returns no realm while UnitFullName("player") does
@@ -249,74 +249,74 @@ function MDTcommsObject:OnCommReceived(prefix, message, distribution, sender)
     --we cache the preset here already
     --the user still decides if he wants to click the chat link and add the preset to his db
     if prefix == presetCommPrefix then
-        local preset = MDT:StringToTable(message,false)
-        MDT.transmissionCache[fullName] = preset
+        local preset = ODT:StringToTable(message,false)
+        ODT.transmissionCache[fullName] = preset
         --live session preset
-        if MDT.liveSessionActive and MDT.liveSessionAcceptingPreset and preset.uid == MDT.livePresetUID then
-            if MDT:ValidateImportPreset(preset) then
-                MDT:ImportPreset(preset,true)
-                MDT.liveSessionAcceptingPreset = false
-                MDT.main_frame.SendingStatusBar:Hide()
-                if MDT.main_frame.LoadingSpinner then
-                    MDT.main_frame.LoadingSpinner:Hide()
-                    MDT.main_frame.LoadingSpinner.Anim:Stop()
+        if ODT.liveSessionActive and ODT.liveSessionAcceptingPreset and preset.uid == ODT.livePresetUID then
+            if ODT:ValidateImportPreset(preset) then
+                ODT:ImportPreset(preset,true)
+                ODT.liveSessionAcceptingPreset = false
+                ODT.main_frame.SendingStatusBar:Hide()
+                if ODT.main_frame.LoadingSpinner then
+                    ODT.main_frame.LoadingSpinner:Hide()
+                    ODT.main_frame.LoadingSpinner.Anim:Stop()
                 end
-                MDT.liveSessionRequested = false
+                ODT.liveSessionRequested = false
             end
         end
     end
 
-    if prefix == MDT.dataCollectionPrefixes.request then
-        MDT.DataCollection:DistributeData()
+    if prefix == ODT.dataCollectionPrefixes.request then
+        ODT.DataCollection:DistributeData()
     end
 
-    if prefix == MDT.dataCollectionPrefixes.distribute then
-        local package = MDT:StringToTable(message,false)
-        MDT.DataCollection:MergeReceiveData(package)
+    if prefix == ODT.dataCollectionPrefixes.distribute then
+        local package = ODT:StringToTable(message,false)
+        ODT.DataCollection:MergeReceiveData(package)
     end
 
-    if prefix == MDT.liveSessionPrefixes.enabled then
-        if MDT.liveSessionRequested == true then
-            MDT:LiveSession_SessionFound(fullName,message)
+    if prefix == ODT.liveSessionPrefixes.enabled then
+        if ODT.liveSessionRequested == true then
+            ODT:LiveSession_SessionFound(fullName,message)
         end
     end
 
     --pulls
-    if prefix == MDT.liveSessionPrefixes.pull then
-        if MDT.liveSessionActive then
-            local preset = MDT:GetCurrentLivePreset()
-            local pulls = MDT:StringToTable(message,false)
+    if prefix == ODT.liveSessionPrefixes.pull then
+        if ODT.liveSessionActive then
+            local preset = ODT:GetCurrentLivePreset()
+            local pulls = ODT:StringToTable(message,false)
             preset.value.pulls = pulls
             if not preset.value.pulls[preset.value.currentPull] then
                 preset.value.currentPull = #preset.value.pulls
                 preset.value.selection = {#preset.value.pulls}
             end
-            if preset == MDT:GetCurrentPreset() then
-                MDT:ReloadPullButtons()
-                MDT:SetSelectionToPull(MDT:GetCurrentPull())
-                MDT:POI_UpdateAll() --for corrupted spires
-                MDT:UpdateProgressbar()
+            if preset == ODT:GetCurrentPreset() then
+                ODT:ReloadPullButtons()
+                ODT:SetSelectionToPull(ODT:GetCurrentPull())
+                ODT:POI_UpdateAll() --for corrupted spires
+                ODT:UpdateProgressbar()
             end
         end
     end
 
     --corrupted
-    if prefix == MDT.liveSessionPrefixes.corrupted then
-        if MDT.liveSessionActive then
-            local preset = MDT:GetCurrentLivePreset()
-            local offsets = MDT:StringToTable(message,false)
+    if prefix == ODT.liveSessionPrefixes.corrupted then
+        if ODT.liveSessionActive then
+            local preset = ODT:GetCurrentLivePreset()
+            local offsets = ODT:StringToTable(message,false)
             --only reposition if no blip is currently moving
-            if not MDT.draggedBlip then
+            if not ODT.draggedBlip then
                 preset.value.riftOffsets = offsets
-                MDT:UpdateMap()
+                ODT:UpdateMap()
             end
         end
     end
 
     --difficulty
-    if prefix == MDT.liveSessionPrefixes.difficulty then
-        if MDT.liveSessionActive then
-            local db = MDT:GetDB()
+    if prefix == ODT.liveSessionPrefixes.difficulty then
+        if ODT.liveSessionActive then
+            local db = ODT:GetDB()
             local difficulty = tonumber(message)
             if difficulty and difficulty~= db.currentDifficulty then
                 local updateSeasonal
@@ -324,54 +324,54 @@ function MDTcommsObject:OnCommReceived(prefix, message, distribution, sender)
                     updateSeasonal = true
                 end
                 db.currentDifficulty = difficulty
-                MDT.main_frame.sidePanel.DifficultySlider:SetValue(difficulty)
-                MDT:UpdateProgressbar()
-                if MDT.EnemyInfoFrame and MDT.EnemyInfoFrame.frame:IsShown() then MDT:UpdateEnemyInfoData() end
-                MDT:ReloadPullButtons()
+                ODT.main_frame.sidePanel.DifficultySlider:SetValue(difficulty)
+                ODT:UpdateProgressbar()
+                if ODT.EnemyInfoFrame and ODT.EnemyInfoFrame.frame:IsShown() then ODT:UpdateEnemyInfoData() end
+                ODT:ReloadPullButtons()
                 if updateSeasonal then
-                    MDT:DungeonEnemies_UpdateSeasonalAffix()
-                    MDT.main_frame.sidePanel.difficultyWarning:Toggle(difficulty)
-                    MDT:POI_UpdateAll()
-                    MDT:KillAllAnimatedLines()
-                    MDT:DrawAllAnimatedLines()
+                    ODT:DungeonEnemies_UpdateSeasonalAffix()
+                    ODT.main_frame.sidePanel.difficultyWarning:Toggle(difficulty)
+                    ODT:POI_UpdateAll()
+                    ODT:KillAllAnimatedLines()
+                    ODT:DrawAllAnimatedLines()
                 end
             end
         end
     end
 
     --week
-    if prefix == MDT.liveSessionPrefixes.week then
-        if MDT.liveSessionActive then
-            local preset = MDT:GetCurrentLivePreset()
+    if prefix == ODT.liveSessionPrefixes.week then
+        if ODT.liveSessionActive then
+            local preset = ODT:GetCurrentLivePreset()
             local week = tonumber(message)
             if preset.week ~= week then
                 preset.week = week
-                local teeming = MDT:IsPresetTeeming(preset)
+                local teeming = ODT:IsPresetTeeming(preset)
                 preset.value.teeming = teeming
-                if preset == MDT:GetCurrentPreset() then
-                    local affixDropdown = MDT.main_frame.sidePanel.affixDropdown
+                if preset == ODT:GetCurrentPreset() then
+                    local affixDropdown = ODT.main_frame.sidePanel.affixDropdown
                     affixDropdown:SetValue(week)
-                    if not MDT:GetCurrentAffixWeek() then
-                        MDT.main_frame.sidePanel.affixWeekWarning.image:Hide()
-                        MDT.main_frame.sidePanel.affixWeekWarning:SetDisabled(true)
-                    elseif MDT:GetCurrentAffixWeek() == week then
-                        MDT.main_frame.sidePanel.affixWeekWarning.image:Hide()
-                        MDT.main_frame.sidePanel.affixWeekWarning:SetDisabled(true)
+                    if not ODT:GetCurrentAffixWeek() then
+                        ODT.main_frame.sidePanel.affixWeekWarning.image:Hide()
+                        ODT.main_frame.sidePanel.affixWeekWarning:SetDisabled(true)
+                    elseif ODT:GetCurrentAffixWeek() == week then
+                        ODT.main_frame.sidePanel.affixWeekWarning.image:Hide()
+                        ODT.main_frame.sidePanel.affixWeekWarning:SetDisabled(true)
                     else
-                        MDT.main_frame.sidePanel.affixWeekWarning.image:Show()
-                        MDT.main_frame.sidePanel.affixWeekWarning:SetDisabled(false)
+                        ODT.main_frame.sidePanel.affixWeekWarning.image:Show()
+                        ODT.main_frame.sidePanel.affixWeekWarning:SetDisabled(false)
                     end
-                    MDT:DungeonEnemies_UpdateTeeming()
-                    MDT:DungeonEnemies_UpdateInspiring()
-                    MDT:UpdateFreeholdSelector(week)
-                    MDT:DungeonEnemies_UpdateBlacktoothEvent(week)
-                    MDT:DungeonEnemies_UpdateSeasonalAffix()
-                    MDT:DungeonEnemies_UpdateBoralusFaction(preset.faction)
-                    MDT:POI_UpdateAll()
-                    MDT:UpdateProgressbar()
-                    MDT:ReloadPullButtons()
-                    MDT:KillAllAnimatedLines()
-                    MDT:DrawAllAnimatedLines()
+                    ODT:DungeonEnemies_UpdateTeeming()
+                    ODT:DungeonEnemies_UpdateInspiring()
+                    ODT:UpdateFreeholdSelector(week)
+                    ODT:DungeonEnemies_UpdateBlacktoothEvent(week)
+                    ODT:DungeonEnemies_UpdateSeasonalAffix()
+                    ODT:DungeonEnemies_UpdateBoralusFaction(preset.faction)
+                    ODT:POI_UpdateAll()
+                    ODT:UpdateProgressbar()
+                    ODT:ReloadPullButtons()
+                    ODT:KillAllAnimatedLines()
+                    ODT:DrawAllAnimatedLines()
                 end
             end
         end
@@ -381,92 +381,92 @@ function MDTcommsObject:OnCommReceived(prefix, message, distribution, sender)
     if sender == UnitFullName("player") then return end
 
 
-    if prefix == MDT.liveSessionPrefixes.request then
-        if MDT.liveSessionActive then
-            MDT:LiveSession_NotifyEnabled()
+    if prefix == ODT.liveSessionPrefixes.request then
+        if ODT.liveSessionActive then
+            ODT:LiveSession_NotifyEnabled()
         end
     end
 
     --request preset
-    if prefix == MDT.liveSessionPrefixes.reqPre then
+    if prefix == ODT.liveSessionPrefixes.reqPre then
         local playerName,playerRealm = UnitFullName("player")
         playerName = playerName.."-"..playerRealm
         if playerName == message then
-            MDT:SendToGroup(MDT:IsPlayerInGroup(),true,MDT:GetCurrentLivePreset())
+            ODT:SendToGroup(ODT:IsPlayerInGroup(),true,ODT:GetCurrentLivePreset())
         end
     end
 
 
     --ping
-    if prefix == MDT.liveSessionPrefixes.ping then
-        local currentUID = MDT:GetCurrentPreset().uid
-        if MDT.liveSessionActive and (currentUID and currentUID==MDT.livePresetUID) then
+    if prefix == ODT.liveSessionPrefixes.ping then
+        local currentUID = ODT:GetCurrentPreset().uid
+        if ODT.liveSessionActive and (currentUID and currentUID==ODT.livePresetUID) then
             local x,y,sublevel = string.match(message,"(.*):(.*):(.*)")
             x = tonumber(x)
             y = tonumber(y)
             sublevel = tonumber(sublevel)
-            local scale = MDT:GetScale()
-            if sublevel == MDT:GetCurrentSubLevel() then
-                MDT:PingMap(x*scale,y*scale)
+            local scale = ODT:GetScale()
+            if sublevel == ODT:GetCurrentSubLevel() then
+                ODT:PingMap(x*scale,y*scale)
             end
         end
     end
 
     --preset objects
-    if prefix == MDT.liveSessionPrefixes.obj then
-        if MDT.liveSessionActive then
-            local preset = MDT:GetCurrentLivePreset()
-            local obj = MDT:StringToTable(message,false)
-            MDT:StorePresetObject(obj,true,preset)
-            if preset == MDT:GetCurrentPreset() then
-                local scale = MDT:GetScale()
-                local currentPreset = MDT:GetCurrentPreset()
-                local currentSublevel = MDT:GetCurrentSubLevel()
-                MDT:DrawPresetObject(obj,nil,scale,currentPreset,currentSublevel)
+    if prefix == ODT.liveSessionPrefixes.obj then
+        if ODT.liveSessionActive then
+            local preset = ODT:GetCurrentLivePreset()
+            local obj = ODT:StringToTable(message,false)
+            ODT:StorePresetObject(obj,true,preset)
+            if preset == ODT:GetCurrentPreset() then
+                local scale = ODT:GetScale()
+                local currentPreset = ODT:GetCurrentPreset()
+                local currentSublevel = ODT:GetCurrentSubLevel()
+                ODT:DrawPresetObject(obj,nil,scale,currentPreset,currentSublevel)
             end
         end
     end
 
     --preset object offsets
-    if prefix == MDT.liveSessionPrefixes.objOff then
-        if MDT.liveSessionActive then
-            local preset = MDT:GetCurrentLivePreset()
+    if prefix == ODT.liveSessionPrefixes.objOff then
+        if ODT.liveSessionActive then
+            local preset = ODT:GetCurrentLivePreset()
             local objIdx,x,y = string.match(message,"(.*):(.*):(.*)")
             objIdx = tonumber(objIdx)
             x = tonumber(x)
             y = tonumber(y)
-            MDT:UpdatePresetObjectOffsets(objIdx,x,y,preset,true)
-            if preset == MDT:GetCurrentPreset() then MDT:DrawAllPresetObjects() end
+            ODT:UpdatePresetObjectOffsets(objIdx,x,y,preset,true)
+            if preset == ODT:GetCurrentPreset() then ODT:DrawAllPresetObjects() end
         end
     end
 
     --preset object changed (deletions, partial deletions)
-    if prefix == MDT.liveSessionPrefixes.objChg then
-        if MDT.liveSessionActive then
-            local preset = MDT:GetCurrentLivePreset()
-            local changedObjects = MDT:StringToTable(message,false)
+    if prefix == ODT.liveSessionPrefixes.objChg then
+        if ODT.liveSessionActive then
+            local preset = ODT:GetCurrentLivePreset()
+            local changedObjects = ODT:StringToTable(message,false)
             for objIdx,obj in pairs(changedObjects) do
                 preset.objects[objIdx] = obj
             end
-            if preset == MDT:GetCurrentPreset() then MDT:DrawAllPresetObjects() end
+            if preset == ODT:GetCurrentPreset() then ODT:DrawAllPresetObjects() end
         end
     end
 
     --various commands
-    if prefix == MDT.liveSessionPrefixes.cmd then
-        if MDT.liveSessionActive then
-            local preset = MDT:GetCurrentLivePreset()
-            if message == "deletePresetObjects" then MDT:DeletePresetObjects(preset, true) end
-            if message == "undo" then MDT:PresetObjectStepBack(preset, true) end
-            if message == "redo" then MDT:PresetObjectStepForward(preset, true) end
-            if message == "clear" then MDT:ClearPreset(preset,true) end
+    if prefix == ODT.liveSessionPrefixes.cmd then
+        if ODT.liveSessionActive then
+            local preset = ODT:GetCurrentLivePreset()
+            if message == "deletePresetObjects" then ODT:DeletePresetObjects(preset, true) end
+            if message == "undo" then ODT:PresetObjectStepBack(preset, true) end
+            if message == "redo" then ODT:PresetObjectStepForward(preset, true) end
+            if message == "clear" then ODT:ClearPreset(preset,true) end
         end
     end
 
     --note text update, delete, move
-    if prefix == MDT.liveSessionPrefixes.note then
-        if MDT.liveSessionActive then
-            local preset = MDT:GetCurrentLivePreset()
+    if prefix == ODT.liveSessionPrefixes.note then
+        if ODT.liveSessionActive then
+            local preset = ODT:GetCurrentLivePreset()
             local action,noteIdx,text,y = string.match(message,"(.*):(.*):(.*):(.*)")
             noteIdx = tonumber(noteIdx)
             if action == "text" then
@@ -479,92 +479,92 @@ function MDTcommsObject:OnCommReceived(prefix, message, distribution, sender)
                 preset.objects[noteIdx].d[1]=x
                 preset.objects[noteIdx].d[2]=y
             end
-            if preset == MDT:GetCurrentPreset() then MDT:DrawAllPresetObjects() end
+            if preset == ODT:GetCurrentPreset() then ODT:DrawAllPresetObjects() end
         end
     end
 
     --preset
-    if prefix == MDT.liveSessionPrefixes.preset then
-        if MDT.liveSessionActive then
-            local preset = MDT:StringToTable(message,false)
-            MDT.transmissionCache[fullName] = preset
-            if MDT:ValidateImportPreset(preset) then
-                MDT.livePresetUID = preset.uid
-                MDT:ImportPreset(preset,true)
+    if prefix == ODT.liveSessionPrefixes.preset then
+        if ODT.liveSessionActive then
+            local preset = ODT:StringToTable(message,false)
+            ODT.transmissionCache[fullName] = preset
+            if ODT:ValidateImportPreset(preset) then
+                ODT.livePresetUID = preset.uid
+                ODT:ImportPreset(preset,true)
             end
         end
     end
 
     --freehold
-    if prefix == MDT.liveSessionPrefixes.free then
-        if MDT.liveSessionActive then
-            local preset = MDT:GetCurrentLivePreset()
+    if prefix == ODT.liveSessionPrefixes.free then
+        if ODT.liveSessionActive then
+            local preset = ODT:GetCurrentLivePreset()
             local value,week = string.match(message,"(.*):(.*)")
             value = value == "T" and true or false
             week = tonumber(week)
             preset.freeholdCrew = (value and week) or nil
-            if preset == MDT:GetCurrentPreset() then
-                MDT:DungeonEnemies_UpdateFreeholdCrew(preset.freeholdCrew)
-                MDT:UpdateFreeholdSelector(week)
-                MDT:ReloadPullButtons()
-                MDT:UpdateProgressbar()
+            if preset == ODT:GetCurrentPreset() then
+                ODT:DungeonEnemies_UpdateFreeholdCrew(preset.freeholdCrew)
+                ODT:UpdateFreeholdSelector(week)
+                ODT:ReloadPullButtons()
+                ODT:UpdateProgressbar()
             end
         end
     end
 
     --Siege of Boralus
-    if prefix == MDT.liveSessionPrefixes.bora then
-        if MDT.liveSessionActive then
-            local preset = MDT:GetCurrentLivePreset()
+    if prefix == ODT.liveSessionPrefixes.bora then
+        if ODT.liveSessionActive then
+            local preset = ODT:GetCurrentLivePreset()
             local faction = tonumber(message)
             preset.faction = faction
-            if preset == MDT:GetCurrentPreset() then
-                MDT:UpdateBoralusSelector()
-                MDT:ReloadPullButtons()
-                MDT:UpdateProgressbar()
+            if preset == ODT:GetCurrentPreset() then
+                ODT:UpdateBoralusSelector()
+                ODT:ReloadPullButtons()
+                ODT:UpdateProgressbar()
             end
         end
     end
 
     --MDI
-    if prefix == MDT.liveSessionPrefixes.mdi then
-        if MDT.liveSessionActive then
-            local preset = MDT:GetCurrentLivePreset()
-            local updateUI = preset == MDT:GetCurrentPreset()
+    if prefix == ODT.liveSessionPrefixes.mdi then
+        if ODT.liveSessionActive then
+            local preset = ODT:GetCurrentLivePreset()
+            local updateUI = preset == ODT:GetCurrentPreset()
             local action,data = string.match(message,"(.*):(.*)")
             data = tonumber(data)
             if action == "toggle" then
-                MDT:GetDB().MDI.enabled = data == 1 or false
-                MDT:DisplayMDISelector()
+                ODT:GetDB().MDI.enabled = data == 1 or false
+                ODT:DisplayMDISelector()
             elseif action == "beguiling" then
                 preset.mdi.beguiling = data
                 if updateUI then
-                    MDT.MDISelector.BeguilingDropDown:SetValue(preset.mdi.beguiling)
-                    MDT:DungeonEnemies_UpdateSeasonalAffix()
-                    MDT:DungeonEnemies_UpdateBoralusFaction(preset.faction)
-                    MDT:UpdateProgressbar()
-                    MDT:ReloadPullButtons()
-                    MDT:POI_UpdateAll()
-                    MDT:KillAllAnimatedLines()
-                    MDT:DrawAllAnimatedLines()
+                    ODT.MDISelector.BeguilingDropDown:SetValue(preset.mdi.beguiling)
+                    ODT:DungeonEnemies_UpdateSeasonalAffix()
+                    ODT:DungeonEnemies_UpdateBoralusFaction(preset.faction)
+                    ODT:UpdateProgressbar()
+                    ODT:ReloadPullButtons()
+                    ODT:POI_UpdateAll()
+                    ODT:KillAllAnimatedLines()
+                    ODT:DrawAllAnimatedLines()
                 end
             elseif action == "freehold" then
                 preset.mdi.freehold = data
                 if updateUI then
-                    MDT.MDISelector.FreeholdDropDown:SetValue(preset.mdi.freehold)
+                    ODT.MDISelector.FreeholdDropDown:SetValue(preset.mdi.freehold)
                     if preset.mdi.freeholdJoined then
-                        MDT:DungeonEnemies_UpdateFreeholdCrew(preset.mdi.freehold)
+                        ODT:DungeonEnemies_UpdateFreeholdCrew(preset.mdi.freehold)
                     end
-                    MDT:DungeonEnemies_UpdateBlacktoothEvent()
-                    MDT:UpdateProgressbar()
-                    MDT:ReloadPullButtons()
+                    ODT:DungeonEnemies_UpdateBlacktoothEvent()
+                    ODT:UpdateProgressbar()
+                    ODT:ReloadPullButtons()
                 end
             elseif action == "join" then
                 preset.mdi.freeholdJoined = data == 1 or false
                 if updateUI then
-                    MDT:DungeonEnemies_UpdateFreeholdCrew()
-                    MDT:ReloadPullButtons()
-                    MDT:UpdateProgressbar()
+                    ODT:DungeonEnemies_UpdateFreeholdCrew()
+                    ODT:ReloadPullButtons()
+                    ODT:UpdateProgressbar()
                 end
             end
 
@@ -577,7 +577,7 @@ end
 ---MakeSendingStatusBar
 ---Creates a bar that indicates sending progress when sharing presets with your group
 ---Called once from initFrames()
-function MDT:MakeSendingStatusBar(f)
+function ODT:MakeSendingStatusBar(f)
     f.SendingStatusBar = CreateFrame("StatusBar", nil, f)
     local statusbar = f.SendingStatusBar
     statusbar:SetMinMaxValues(0, 1)
@@ -611,42 +611,42 @@ end
 
 --callback for SendCommMessage
 local function displaySendingProgress(userArgs,bytesSent,bytesToSend)
-    MDT.main_frame.SendingStatusBar:Show()
-    MDT.main_frame.SendingStatusBar:SetValue(bytesSent/bytesToSend)
-    MDT.main_frame.SendingStatusBar.value:SetText(string.format(L["Sending: %.1f"],bytesSent/bytesToSend*100).."%")
+    ODT.main_frame.SendingStatusBar:Show()
+    ODT.main_frame.SendingStatusBar:SetValue(bytesSent/bytesToSend)
+    ODT.main_frame.SendingStatusBar.value:SetText(string.format(L["Sending: %.1f"],bytesSent/bytesToSend*100).."%")
     --done sending
     if bytesSent == bytesToSend then
         local distribution = userArgs[1]
         local preset = userArgs[2]
         local silent = userArgs[3]
         --restore "Send" and "Live" button
-        if MDT.liveSessionActive then
-            MDT.main_frame.LiveSessionButton:SetText(L["*Live*"])
+        if ODT.liveSessionActive then
+            ODT.main_frame.LiveSessionButton:SetText(L["*Live*"])
         else
-            MDT.main_frame.LiveSessionButton:SetText(L["Live"])
-            MDT.main_frame.LiveSessionButton.text:SetTextColor(1,0.8196,0)
-            MDT.main_frame.LinkToChatButton:SetDisabled(false)
-            MDT.main_frame.LinkToChatButton.text:SetTextColor(1,0.8196,0)
+            ODT.main_frame.LiveSessionButton:SetText(L["Live"])
+            ODT.main_frame.LiveSessionButton.text:SetTextColor(1,0.8196,0)
+            ODT.main_frame.LinkToChatButton:SetDisabled(false)
+            ODT.main_frame.LinkToChatButton.text:SetTextColor(1,0.8196,0)
         end
-        MDT.main_frame.LinkToChatButton:SetText(L["Share"])
-        MDT.main_frame.LiveSessionButton:SetDisabled(false)
-        MDT.main_frame.SendingStatusBar:Hide()
+        ODT.main_frame.LinkToChatButton:SetText(L["Share"])
+        ODT.main_frame.LiveSessionButton:SetDisabled(false)
+        ODT.main_frame.SendingStatusBar:Hide()
         --output chat link
         if not silent then
             local prefix = "[MythicDungeonTools: "
-            local dungeon = MDT:GetDungeonName(preset.value.currentDungeonIdx)
+            local dungeon = ODT:GetDungeonName(preset.value.currentDungeonIdx)
             local presetName = preset.text
             local name, realm = UnitFullName("player")
             local fullName = name.."+"..realm
             SendChatMessage(prefix..fullName.." - "..dungeon..": "..presetName.."]",distribution)
-            MDT:SetThrottleValues(true)
+            ODT:SetThrottleValues(true)
         end
     end
 end
 
 ---generates a unique random 11 digit number in base64 and assigns it to a preset if it does not have one yet
 ---credit to WeakAuras2
-function MDT:SetUniqueID(preset)
+function ODT:SetUniqueID(preset)
     if not preset.uid then
         local s = {}
         for i=1,11 do
@@ -658,30 +658,30 @@ end
 
 ---SendToGroup
 ---Send current preset to group/raid
-function MDT:SendToGroup(distribution,silent,preset)
-    MDT:SetThrottleValues()
-    preset = preset or MDT:GetCurrentPreset()
+function ODT:SendToGroup(distribution,silent,preset)
+    ODT:SetThrottleValues()
+    preset = preset or ODT:GetCurrentPreset()
     --set unique id
-    MDT:SetUniqueID(preset)
+    ODT:SetUniqueID(preset)
     --gotta encode mdi mode / difficulty into preset
-    local db = MDT:GetDB()
+    local db = ODT:GetDB()
     preset.mdiEnabled = db.MDI.enabled
     preset.difficulty = db.currentDifficulty
-    local export = MDT:TableToString(preset,false,5)
-    MDTcommsObject:SendCommMessage("MDTPreset", export, distribution, nil, "BULK",displaySendingProgress,{distribution,preset,silent})
+    local export = ODT:TableToString(preset,false,5)
+    ODTcommsObject:SendCommMessage("ODTPreset", export, distribution, nil, "BULK",displaySendingProgress,{distribution,preset,silent})
 end
 
 ---GetPresetSize
 ---Returns the number of characters the string version of the preset contains
-function MDT:GetPresetSize(forChat,level)
-    local preset = MDT:GetCurrentPreset()
-    local export = MDT:TableToString(preset,forChat,level)
+function ODT:GetPresetSize(forChat,level)
+    local preset = ODT:GetCurrentPreset()
+    local export = ODT:TableToString(preset,forChat,level)
     return string.len(export)
 end
 
 local defaultCPS = tonumber(_G.ChatThrottleLib.MAX_CPS)
 local defaultBURST = tonumber(_G.ChatThrottleLib.BURST)
-function MDT:SetThrottleValues(default)
+function ODT:SetThrottleValues(default)
     if not _G.ChatThrottleLib then return end
     if default then
         _G.ChatThrottleLib.MAX_CPS = defaultCPS

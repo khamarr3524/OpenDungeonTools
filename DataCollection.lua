@@ -1,12 +1,12 @@
 ---Tracks spells casted by enemies and adds them to the dataset
 local db
 local f
-local MDT = MDT
+local ODT = ODT
 
-MDT.DataCollection = {}
-local DC = MDT.DataCollection
+ODT.DataCollection = {}
+local DC = ODT.DataCollection
 function DC:Init()
-    db = MDT:GetDB()
+    db = ODT:GetDB()
     db.dataCollection = db.dataCollection or {}
     db.dataCollectionCC = db.dataCollectionCC or {}
     db.dataCollectionGUID = db.dataCollectionGUID or {}
@@ -27,7 +27,7 @@ function DC:AddCollectedDataToEnemyTable()
     for i=29,36 do
         if db.dataCollection[i] then
             for id,spells in pairs(db.dataCollection[i]) do
-                local enemies = MDT.dungeonEnemies[i]
+                local enemies = ODT.dungeonEnemies[i]
                 for enemyIdx,enemy in pairs(enemies) do
                     if enemy.id == id then
                         enemy.spells = enemy.spells or {}
@@ -41,7 +41,7 @@ function DC:AddCollectedDataToEnemyTable()
         end
         if db.dataCollectionCC[i] then
             for id,characteristics in pairs(db.dataCollectionCC[i]) do
-                local enemies = MDT.dungeonEnemies[i]
+                local enemies = ODT.dungeonEnemies[i]
                 for enemyIdx,enemy in pairs(enemies) do
                     if enemy.id == id then
                         enemy.characteristics = enemy.characteristics or {}
@@ -181,7 +181,7 @@ function DC.COMBAT_LOG_EVENT_UNFILTERED(self,...)
         id = tonumber(id)
         --dungeon
         for i=29,36 do
-            local enemies = MDT.dungeonEnemies[i]
+            local enemies = ODT.dungeonEnemies[i]
             --enemy
             for enemyIdx,enemy in pairs(enemies) do
                 if enemy.id == id then
@@ -202,7 +202,7 @@ function DC.COMBAT_LOG_EVENT_UNFILTERED(self,...)
 
         --dungeon
         for i=29,36 do
-            local enemies = MDT.dungeonEnemies[i]
+            local enemies = ODT.dungeonEnemies[i]
             --enemy
             for enemyIdx,enemy in pairs(enemies) do
                 if enemy.id == id then
@@ -227,30 +227,30 @@ function DC.COMBAT_LOG_EVENT_UNFILTERED(self,...)
 end
 
 ---Request users in party/raid to distribute their collected data
-function MDT:RequestDataCollectionUpdate()
+function ODT:RequestDataCollectionUpdate()
     --temporary lag fix
     if true then return end
     local distribution = self:IsPlayerInGroup()
     if not distribution then return end
-    MDTcommsObject:SendCommMessage(self.dataCollectionPrefixes.request, "0", distribution, nil, "ALERT")
+    ODTcommsObject:SendCommMessage(self.dataCollectionPrefixes.request, "0", distribution, nil, "ALERT")
 end
 
 ---Distribute collected data to party/raid
 function DC:DistributeData()
     --temporary lag fix
     if true then return end
-    local distribution = MDT:IsPlayerInGroup()
+    local distribution = ODT:IsPlayerInGroup()
     if not distribution then return end
     --throttle to 1 sync every 5 minutes
     if not DC.lastDistribution or DC.lastDistribution < GetTime() - 300 then
         DC.lastDistribution = GetTime()
-        db = MDT:GetDB()
+        db = ODT:GetDB()
         local package = {
             [1] = db.dataCollection,
             [2] = db.dataCollectionCC
         }
-        local export = MDT:TableToString(package,false,5)
-        MDTcommsObject:SendCommMessage(MDT.dataCollectionPrefixes.distribute, export, distribution, nil, "BULK",nil,nil)
+        local export = ODT:TableToString(package,false,5)
+        ODTcommsObject:SendCommMessage(ODT.dataCollectionPrefixes.distribute, export, distribution, nil, "BULK",nil,nil)
     end
 end
 
@@ -258,7 +258,7 @@ end
 function DC:MergeReceiveData(package)
     --temporary lag fix
     if true then return end
-    db = MDT:GetDB()
+    db = ODT:GetDB()
     local collection,collectionCC = unpack(package)
     --db.dataCollection[dungeonIdx][npcId][spellId]
     for dungeonIdx,npcs in pairs(collection) do
@@ -298,11 +298,11 @@ end
 ---HealthTrack
 local enemiesToScale
 function DC:InitHealthTrack()
-    db = MDT:GetDB()
+    db = ODT:GetDB()
     local enemyCount = 0
     local totalEnemies = 0
     local changedEnemies = {}
-    for _,enemy in pairs(MDT.dungeonEnemies[db.currentDungeonIdx]) do
+    for _,enemy in pairs(ODT.dungeonEnemies[db.currentDungeonIdx]) do
         totalEnemies = totalEnemies + 1
     end
     f = CreateFrame("Frame")
@@ -317,7 +317,7 @@ function DC:InitHealthTrack()
             end
             if npcId then
                 local npcHealth = UnitHealthMax(unit)
-                for enemyIdx,enemy in pairs(MDT.dungeonEnemies[db.currentDungeonIdx]) do
+                for enemyIdx,enemy in pairs(ODT.dungeonEnemies[db.currentDungeonIdx]) do
                     if enemy.id == tonumber(npcId) then
                         if enemy.health ~= npcHealth then
                             print(npcHealth/enemy.health)
@@ -326,7 +326,7 @@ function DC:InitHealthTrack()
                             changedEnemies[enemyIdx] = true
                             local enemiesLeft = " "
                             enemiesToScale = {}
-                            for k,v in pairs(MDT.dungeonEnemies[db.currentDungeonIdx]) do
+                            for k,v in pairs(ODT.dungeonEnemies[db.currentDungeonIdx]) do
                                 if not changedEnemies[k] then
                                     enemiesLeft = enemiesLeft..v.name..", "
                                     enemiesToScale[k] = true
@@ -343,7 +343,7 @@ function DC:InitHealthTrack()
 end
 
 --season 4
-function MDT:FinishHPTrack()
+function ODT:FinishHPTrack()
     local multiplier = 1.526092251434
     local constantNpcs = {
         [155432]=15369884, --enchanted
@@ -355,7 +355,7 @@ function MDT:FinishHPTrack()
         [161124]=2151786, --tank
     }
     for enemyIdx in pairs(enemiesToScale) do
-        local enemy = MDT.dungeonEnemies[db.currentDungeonIdx][enemyIdx]
+        local enemy = ODT.dungeonEnemies[db.currentDungeonIdx][enemyIdx]
         if enemy.health>1 then
             local newHealth = constantNpcs[enemy.id] or math.floor(enemy.health*multiplier)
             enemy.health = newHealth

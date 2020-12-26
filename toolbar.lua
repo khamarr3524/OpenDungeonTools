@@ -1,5 +1,5 @@
-local MDT = MDT
-local L = MDT.L
+local ODT = ODT
+local L = ODT.L
 local sizex,sizey = 350,33
 local AceGUI = LibStub("AceGUI-3.0")
 local db
@@ -11,15 +11,15 @@ local objectDrawLayer = "ARTWORK"
 local twipe,tinsert,tremove,tgetn,CreateFrame,tonumber,pi,max,min,atan2,abs,pairs,ipairs,GetCursorPosition,GameTooltip = table.wipe,table.insert,table.remove,table.getn,CreateFrame,tonumber,math.pi,math.max,math.min,math.atan2,math.abs,pairs,ipairs,GetCursorPosition,GameTooltip
 
 ---sets up the toolbar frame and the widgets in it
-function MDT:initToolbar(frame)
-    db = MDT:GetDB()
+function ODT:initToolbar(frame)
+    db = ODT:GetDB()
 
-    frame.toolbar = CreateFrame("Frame","MDTToolbarFrame",frame)
+    frame.toolbar = CreateFrame("Frame","ODTToolbarFrame",frame)
     frame.toolbar:SetFrameStrata("HIGH")
     frame.toolbar:SetFrameLevel(5)
     frame.toolbar.tex = frame.toolbar:CreateTexture(nil,"HIGH",nil,6)
     frame.toolbar.tex:SetAllPoints()
-    frame.toolbar.tex:SetColorTexture(unpack(MDT.BackdropColor))
+    frame.toolbar.tex:SetColorTexture(unpack(ODT.BackdropColor))
     frame.toolbar.toggleButton = CreateFrame("Button", nil, frame);
     frame.toolbar.toggleButton:SetFrameStrata("HIGH")
     frame.toolbar.toggleButton:SetFrameLevel(6)
@@ -31,7 +31,7 @@ function MDT:initToolbar(frame)
 
     frame.toolbar:Hide()
     frame.toolbar:SetScript("OnHide",function()
-        MDT:UpdateSelectedToolbarTool(nil)
+        ODT:UpdateSelectedToolbarTool(nil)
     end)
 
     frame.toolbar.toggleButton:SetScript("OnClick", function()
@@ -67,7 +67,7 @@ function MDT:initToolbar(frame)
     frame.toolbar.widgetGroup.frame:SetFrameStrata("High")
     frame.toolbar.widgetGroup.frame:SetFrameLevel(7)
 
-    MDT:FixAceGUIShowHide(frame.toolbar.widgetGroup,frame.toolbar)
+    ODT:FixAceGUIShowHide(frame.toolbar.widgetGroup,frame.toolbar)
 
     do
         --dirty hook to make widgetgroup show/hide
@@ -87,7 +87,7 @@ function MDT:initToolbar(frame)
     ---TOOLBAR WIDGETS
     local widgetWidth = 24
     local widgets = {}
-    MDT.tempWidgets = widgets
+    ODT.tempWidgets = widgets
 
     ---back
     local back = AceGUI:Create("Icon")
@@ -179,7 +179,7 @@ function MDT:initToolbar(frame)
     pencil:SetImage("Interface\\AddOns\\MythicDungeonTools\\Textures\\icons",0,0.25,0,0.25)
     toolbarTools["pencil"] = pencil
     pencil:SetCallback("OnClick",function (widget,callbackName)
-        if currentTool == "pencil" then MDT:UpdateSelectedToolbarTool() else MDT:UpdateSelectedToolbarTool("pencil") end
+        if currentTool == "pencil" then ODT:UpdateSelectedToolbarTool() else ODT:UpdateSelectedToolbarTool("pencil") end
     end)
     pencil.tooltipText = L["Drawing: Freehand"]
     tinsert(widgets,pencil)
@@ -189,7 +189,7 @@ function MDT:initToolbar(frame)
     line:SetImage("Interface\\AddOns\\MythicDungeonTools\\Textures\\icons",0,0.25,0.75,1)
     toolbarTools["line"] = line
     line:SetCallback("OnClick",function (widget,callbackName)
-        if currentTool == "line" then MDT:UpdateSelectedToolbarTool() else MDT:UpdateSelectedToolbarTool("line") end
+        if currentTool == "line" then ODT:UpdateSelectedToolbarTool() else ODT:UpdateSelectedToolbarTool("line") end
     end)
     line.tooltipText = L["Drawing: Line"]
     tinsert(widgets,line)
@@ -199,7 +199,7 @@ function MDT:initToolbar(frame)
     arrow:SetImage("Interface\\AddOns\\MythicDungeonTools\\Textures\\icons",0.25,0.5,0,0.25)
     toolbarTools["arrow"] = arrow
     arrow:SetCallback("OnClick",function (widget,callbackName)
-        if currentTool == "arrow" then MDT:UpdateSelectedToolbarTool() else MDT:UpdateSelectedToolbarTool("arrow") end
+        if currentTool == "arrow" then ODT:UpdateSelectedToolbarTool() else ODT:UpdateSelectedToolbarTool("arrow") end
     end)
     arrow.tooltipText = L["Drawing: Arrow"]
     tinsert(widgets,arrow)
@@ -209,7 +209,7 @@ function MDT:initToolbar(frame)
     note:SetImage("Interface\\AddOns\\MythicDungeonTools\\Textures\\icons",0.75,1,0,0.25)
     toolbarTools["note"] = note
     note:SetCallback("OnClick",function (widget,callbackName)
-        if currentTool == "note" then MDT:UpdateSelectedToolbarTool() else MDT:UpdateSelectedToolbarTool("note") end
+        if currentTool == "note" then ODT:UpdateSelectedToolbarTool() else ODT:UpdateSelectedToolbarTool("note") end
     end)
     note.tooltipText = L["Insert Note"]
     tinsert(widgets,note)
@@ -219,7 +219,7 @@ function MDT:initToolbar(frame)
     mover:SetImage("Interface\\AddOns\\MythicDungeonTools\\Textures\\icons",0.5,0.75,0,0.25)
     toolbarTools["mover"] = mover
     mover:SetCallback("OnClick",function (widget,callbackName)
-        if currentTool == "mover" then MDT:UpdateSelectedToolbarTool() else MDT:UpdateSelectedToolbarTool("mover") end
+        if currentTool == "mover" then ODT:UpdateSelectedToolbarTool() else ODT:UpdateSelectedToolbarTool("mover") end
     end)
     mover.tooltipText = L["Move Object"]
     tinsert(widgets,mover)
@@ -230,7 +230,7 @@ function MDT:initToolbar(frame)
     cogwheel:SetCallback("OnClick",function (widget,callbackName)
         InterfaceOptionsFrame_OpenToCategory("MythicDungeonTools")
         InterfaceOptionsFrame_OpenToCategory("MythicDungeonTools")
-        MDT:HideInterface()
+        ODT:HideInterface()
     end)
     cogwheel.tooltipText = L["Settings"]
     --tinsert(widgets,cogwheel)
@@ -240,7 +240,7 @@ function MDT:initToolbar(frame)
     eraser:SetImage("Interface\\AddOns\\MythicDungeonTools\\Textures\\icons",0.25,0.5,0.25,0.5)
     toolbarTools["eraser"] = eraser
     eraser:SetCallback("OnClick",function (widget,callbackName)
-        if currentTool == "eraser" then MDT:UpdateSelectedToolbarTool() else MDT:UpdateSelectedToolbarTool("eraser") end
+        if currentTool == "eraser" then ODT:UpdateSelectedToolbarTool() else ODT:UpdateSelectedToolbarTool("eraser") end
     end)
     eraser.tooltipText = L["Drawing: Eraser"]
     tinsert(widgets,eraser)
@@ -263,10 +263,10 @@ function MDT:initToolbar(frame)
         if widget.type == "EditBox" then widget:SetWidth(30) end
         if widget.SetImageSize then widget:SetImageSize(20,20) end
         widget:SetCallback("OnEnter",function(widget,callbackName)
-            MDT:ToggleToolbarTooltip(true,widget)
+            ODT:ToggleToolbarTooltip(true,widget)
         end)
         widget:SetCallback("OnLeave",function()
-            MDT:ToggleToolbarTooltip(false)
+            ODT:ToggleToolbarTooltip(false)
         end)
         frame.toolbar.widgetGroup:AddChild(widget)
     end
@@ -275,8 +275,8 @@ function MDT:initToolbar(frame)
     frame.toolbar:ClearAllPoints()
     frame.toolbar:SetPoint("TOP", frame, "TOP", 0, 0)
 
-    MDT:CreateBrushPreview(frame)
-    MDT:UpdateSelectedToolbarTool()
+    ODT:CreateBrushPreview(frame)
+    ODT:UpdateSelectedToolbarTool()
 
 end
 
@@ -287,7 +287,7 @@ local notePoolCollection
 local function getTexture()
     local size = tgetn(texturePool)
     if size == 0 then
-        return MDT.main_frame.mapPanelFrame:CreateTexture(nil, "OVERLAY")
+        return ODT.main_frame.mapPanelFrame:CreateTexture(nil, "OVERLAY")
     else
         local tex = texturePool[size]
         tremove(texturePool, size)
@@ -305,7 +305,7 @@ local function releaseTexture(tex)
 end
 
 ---ReleaseAllActiveTextures
-function MDT:ReleaseAllActiveTextures()
+function ODT:ReleaseAllActiveTextures()
     for k,tex in pairs(activeTextures) do
         releaseTexture(tex)
     end
@@ -314,7 +314,7 @@ function MDT:ReleaseAllActiveTextures()
 end
 
 ---CreateBrushPreview
-function MDT:CreateBrushPreview(frame)
+function ODT:CreateBrushPreview(frame)
     frame.brushPreview = CreateFrame("Frame","MythicDungeonToolsBrushPreview",UIParent)
     frame.brushPreview:SetFrameStrata("HIGH")
     frame.brushPreview:SetFrameLevel(4)
@@ -325,12 +325,12 @@ function MDT:CreateBrushPreview(frame)
 end
 
 ---EnableBrushPreview
-function MDT:EnableBrushPreview(tool)
-    local frame = MDT.main_frame
+function ODT:EnableBrushPreview(tool)
+    local frame = ODT.main_frame
     if tool == "mover" then return end
     frame.brushPreview:Show()
     frame.brushPreview:SetScript("OnUpdate", function(self, tick)
-        if MouseIsOver(MDTScrollFrame) and not MouseIsOver(MDTToolbarFrame) then
+        if MouseIsOver(ODTScrollFrame) and not MouseIsOver(ODTToolbarFrame) then
             local x,y = GetCursorPosition()
             x = x/UIParent:GetScale()
             y = y/UIParent:GetScale()
@@ -351,15 +351,15 @@ function MDT:EnableBrushPreview(tool)
     end)
 end
 ---DisableBrushPreview
-function MDT:DisableBrushPreview()
-    local frame = MDT.main_frame
+function ODT:DisableBrushPreview()
+    local frame = ODT.main_frame
     frame.brushPreview:Hide()
     frame.brushPreview.tex:Hide()
     frame.brushPreview:SetScript("OnUpdate", nil)
 end
 
 ---ToggleToolbarTooltip
-function MDT:ToggleToolbarTooltip(show, widget)
+function ODT:ToggleToolbarTooltip(show, widget)
     if not show then
         GameTooltip:Hide()
     else
@@ -374,18 +374,18 @@ end
 
 ---UpdateSelectedToolbarTool
 ---Called when a tool is selected/deselected
-function MDT:UpdateSelectedToolbarTool(widgetName)
-    local toolbar = MDT.main_frame.toolbar
+function ODT:UpdateSelectedToolbarTool(widgetName)
+    local toolbar = ODT.main_frame.toolbar
     if not widgetName or (not toolbarTools[widgetName]) then
         if toolbar.highlight then toolbar.highlight:Hide() end
-        MDT:RestoreScrollframeScripts()
-        MDT:DisableBrushPreview()
+        ODT:RestoreScrollframeScripts()
+        ODT:DisableBrushPreview()
         if drawingActive then
-            if currentTool == "pencil" then MDT:StopPencilDrawing() end
-            if currentTool == "arrow" then MDT:StopArrowDrawing() end
-            if currentTool == "line" then MDT:StopLineDrawing() end
-            if currentTool == "mover" then MDT:StopMovingDrawing() end
-            if currentTool == "eraser" then MDT:StopEraserDrawing() end
+            if currentTool == "pencil" then ODT:StopPencilDrawing() end
+            if currentTool == "arrow" then ODT:StopArrowDrawing() end
+            if currentTool == "line" then ODT:StopLineDrawing() end
+            if currentTool == "mover" then ODT:StopMovingDrawing() end
+            if currentTool == "eraser" then ODT:StopEraserDrawing() end
         end
         currentTool = nil
         toolbar:SetScript("OnUpdate",nil)
@@ -399,26 +399,26 @@ function MDT:UpdateSelectedToolbarTool(widgetName)
     toolbar.highlight:SetSize(widget.frame:GetWidth(),widget.frame:GetWidth())
     toolbar.highlight:ClearAllPoints()
     toolbar.highlight:SetPoint("CENTER",widget.frame,"CENTER")
-    MDT:OverrideScrollframeScripts()
-    MDT:EnableBrushPreview(currentTool)
+    ODT:OverrideScrollframeScripts()
+    ODT:EnableBrushPreview(currentTool)
     toolbar.highlight:Show()
 end
 
 ---OverrideScrollframeScripts
 ---Take control of the map scrollframe mouse event scripts
 ---Called when the user starts drawing on the map
-function MDT:OverrideScrollframeScripts()
-    local frame = MDT.main_frame
+function ODT:OverrideScrollframeScripts()
+    local frame = ODT.main_frame
     frame.scrollFrame:SetScript("OnMouseDown", function(self,button)
         if button == "LeftButton" then
-            if currentTool == "pencil" then MDT:StartPencilDrawing() end
-            if currentTool == "arrow" then MDT:StartArrowDrawing() end
-            if currentTool == "line" then MDT:StartLineDrawing() end
-            if currentTool == "mover" then MDT:StartMovingObject() end
-            if currentTool == "eraser" then MDT:StartEraserDrawing() end
+            if currentTool == "pencil" then ODT:StartPencilDrawing() end
+            if currentTool == "arrow" then ODT:StartArrowDrawing() end
+            if currentTool == "line" then ODT:StartLineDrawing() end
+            if currentTool == "mover" then ODT:StartMovingObject() end
+            if currentTool == "eraser" then ODT:StartEraserDrawing() end
         end
         if button == "RightButton" then
-            local scrollFrame = MDT.main_frame.scrollFrame
+            local scrollFrame = ODT.main_frame.scrollFrame
             if scrollFrame.zoomedIn then
                 scrollFrame.panning = true;
                 scrollFrame.cursorX,scrollFrame.cursorY = GetCursorPosition()
@@ -429,22 +429,22 @@ function MDT:OverrideScrollframeScripts()
     end)
     frame.scrollFrame:SetScript("OnMouseUp", function(self,button)
         if button == "LeftButton" then
-            if currentTool == "pencil" then MDT:StopPencilDrawing() end
-            if currentTool == "arrow" then MDT:StopArrowDrawing() end
-            if currentTool == "line" then MDT:StopLineDrawing() end
-            if currentTool == "mover" then MDT:StopMovingObject() end
-            if currentTool == "eraser" then MDT:StopEraserDrawing() end
-            if currentTool == "note" then MDT:StartNoteDrawing() end
+            if currentTool == "pencil" then ODT:StopPencilDrawing() end
+            if currentTool == "arrow" then ODT:StopArrowDrawing() end
+            if currentTool == "line" then ODT:StopLineDrawing() end
+            if currentTool == "mover" then ODT:StopMovingObject() end
+            if currentTool == "eraser" then ODT:StopEraserDrawing() end
+            if currentTool == "note" then ODT:StartNoteDrawing() end
         end
         if button == "RightButton" then
-            local scrollFrame = MDT.main_frame.scrollFrame
+            local scrollFrame = ODT.main_frame.scrollFrame
             if scrollFrame.panning then scrollFrame.panning = false end
             --only ping if we didnt pan
             if scrollFrame.oldX==scrollFrame.cursorX or scrollFrame.oldY==scrollFrame.cursorY then
-                local x,y = MDT:GetCursorPosition()
-                MDT:PingMap(x,y)
-                local sublevel = MDT:GetCurrentSubLevel()
-                if MDT.liveSessionActive then MDT:LiveSession_SendPing(x,y,sublevel) end
+                local x,y = ODT:GetCursorPosition()
+                ODT:PingMap(x,y)
+                local sublevel = ODT:GetCurrentSubLevel()
+                if ODT.liveSessionActive then ODT:LiveSession_SendPing(x,y,sublevel) end
             end
         end
     end)
@@ -457,9 +457,9 @@ function MDT:OverrideScrollframeScripts()
                 local xOffset,yOffset
 
                 note:SetScript("OnMouseDown",function()
-                    local currentPreset = MDT:GetCurrentPreset()
-                    local x,y = MDT:GetCursorPosition()
-                    local scale = MDT:GetScale()
+                    local currentPreset = ODT:GetCurrentPreset()
+                    local x,y = ODT:GetCursorPosition()
+                    local scale = ODT:GetScale()
                     x = x*(1/scale)
                     y = y*(1/scale)
                     local nx = currentPreset.objects[note.objectIndex].d[1]
@@ -472,15 +472,15 @@ function MDT:OverrideScrollframeScripts()
                 end)
                 note:SetScript("OnDragStop", function()
                     note:StopMovingOrSizing()
-                    local x,y = MDT:GetCursorPosition()
-                    local scale = MDT:GetScale()
+                    local x,y = ODT:GetCursorPosition()
+                    local scale = ODT:GetScale()
                     x = x*(1/scale)
                     y = y*(1/scale)
-                    local currentPreset = MDT:GetCurrentPreset()
+                    local currentPreset = ODT:GetCurrentPreset()
                     currentPreset.objects[note.objectIndex].d[1]=x-xOffset
                     currentPreset.objects[note.objectIndex].d[2]=y-yOffset
-                    if MDT.liveSessionActive then MDT:LiveSession_SendNoteCommand("move",note.objectIndex,x-xOffset,y-yOffset) end
-                    MDT:DrawAllPresetObjects()
+                    if ODT.liveSessionActive then ODT:LiveSession_SendNoteCommand("move",note.objectIndex,x-xOffset,y-yOffset) end
+                    ODT:DrawAllPresetObjects()
                 end)
             end
         else
@@ -495,10 +495,10 @@ end
 ---RestoreScrollframeScripts
 ---Restore original functionality to the map scrollframe: Clicking on enemies, rightclick context menu
 ---Called when the user is done drawing on the map
-function MDT:RestoreScrollframeScripts()
-    local frame = MDT.main_frame
-    frame.scrollFrame:SetScript("OnMouseDown", MDT.OnMouseDown)
-    frame.scrollFrame:SetScript("OnMouseUp", MDT.OnMouseUp)
+function ODT:RestoreScrollframeScripts()
+    local frame = ODT.main_frame
+    frame.scrollFrame:SetScript("OnMouseDown", ODT.OnMouseDown)
+    frame.scrollFrame:SetScript("OnMouseUp", ODT.OnMouseUp)
     --make notes not draggable
     if notePoolCollection then
         for note,_ in pairs(notePoolCollection.pools.QuestPinTemplate.activeObjects) do
@@ -509,11 +509,11 @@ function MDT:RestoreScrollframeScripts()
 end
 
 ---returns cursor position relative to the map frame
-function MDT:GetCursorPosition()
-    local frame = MDT.main_frame
+function ODT:GetCursorPosition()
+    local frame = ODT.main_frame
     local scrollFrame = frame.scrollFrame
     local relativeFrame = UIParent      --UIParent
-    local mapPanelFrame = MDT.main_frame.mapPanelFrame
+    local mapPanelFrame = ODT.main_frame.mapPanelFrame
     local cursorX, cursorY = GetCursorPosition()
     local mapScale = mapPanelFrame:GetScale()
     local scrollH = scrollFrame:GetHorizontalScroll()
@@ -526,7 +526,7 @@ function MDT:GetCursorPosition()
 end
 
 ---GetHighestFrameLevelAtCursor
-function MDT:GetHighestFrameLevelAtCursor()
+function ODT:GetHighestFrameLevelAtCursor()
     local currentSublevel = -8
     for k,v in pairs(activeTextures) do
         if MouseIsOver(v) and v:IsShown() and (not v.isOwn) then
@@ -540,10 +540,10 @@ end
 
 local nobj
 ---StartArrowDrawing
-function MDT:StartArrowDrawing()
+function ODT:StartArrowDrawing()
     drawingActive = true
-    local frame = MDT.main_frame
-    local startx,starty = MDT:GetCursorPosition()
+    local frame = ODT.main_frame
+    local startx,starty = ODT:GetCursorPosition()
     local line = getTexture()
     line:SetTexture("Interface\\AddOns\\MythicDungeonTools\\Textures\\Square_White")
     line:SetVertexColor(db.toolbar.color.r,db.toolbar.color.g,db.toolbar.color.b,db.toolbar.color.a)
@@ -561,18 +561,18 @@ function MDT:StartArrowDrawing()
     ---d: size,lineFactor,sublevel,shown,colorstring,drawLayer,[smooth]
     ---l: x1,y1,x2,y2,...
     ---t: triangleroation
-    nobj = { d={ db.toolbar.brushSize, 1, MDT:GetCurrentSubLevel(), true, MDT:RGBToHex(db.toolbar.color.r,db.toolbar.color.g,db.toolbar.color.b)}, l={}}
-    nobj.l = { MDT:Round(startx,1), MDT:Round(starty,1)}
+    nobj = { d={ db.toolbar.brushSize, 1, ODT:GetCurrentSubLevel(), true, ODT:RGBToHex(db.toolbar.color.r,db.toolbar.color.g,db.toolbar.color.b)}, l={}}
+    nobj.l = { ODT:Round(startx,1), ODT:Round(starty,1)}
     nobj.t = {}
-    local scale = MDT:GetScale()
+    local scale = ODT:GetScale()
     frame.toolbar:SetScript("OnUpdate", function(self, tick)
-        if not MouseIsOver(MDTScrollFrame) then return end
-        local x,y = MDT:GetCursorPosition()local currentDrawLayer = MDT:GetHighestFrameLevelAtCursor()
+        if not MouseIsOver(ODTScrollFrame) then return end
+        local x,y = ODT:GetCursorPosition()local currentDrawLayer = ODT:GetHighestFrameLevelAtCursor()
         drawLayer = max(drawLayer,currentDrawLayer)
         if x~= startx and y~=starty then
-            DrawLine(line, MDT.main_frame.mapPanelTile1, startx, starty, x, y, (db.toolbar.brushSize*0.3)*scale, 1,"TOPLEFT")
-            nobj.l[3] = MDT:Round(x,1)
-            nobj.l[4] = MDT:Round(y,1)
+            DrawLine(line, ODT.main_frame.mapPanelTile1, startx, starty, x, y, (db.toolbar.brushSize*0.3)*scale, 1,"TOPLEFT")
+            nobj.l[3] = ODT:Round(x,1)
+            nobj.l[4] = ODT:Round(y,1)
         end
         --position arrow head
         arrow:Show()
@@ -582,7 +582,7 @@ function MDT:StartArrowDrawing()
         local rotation = atan2(starty-y,startx-x)
         arrow:SetRotation(rotation+pi)
         arrow:ClearAllPoints()
-        arrow:SetPoint("CENTER", MDT.main_frame.mapPanelTile1,"TOPLEFT",x,y)
+        arrow:SetPoint("CENTER", ODT.main_frame.mapPanelTile1,"TOPLEFT",x,y)
         arrow:SetDrawLayer(objectDrawLayer, drawLayer)
         line:SetDrawLayer(objectDrawLayer, drawLayer)
 
@@ -592,9 +592,9 @@ function MDT:StartArrowDrawing()
 end
 
 ---StopArrowDrawing
-function MDT:StopArrowDrawing()
-    local frame = MDT.main_frame
-    MDT:StorePresetObject(nobj)
+function ODT:StopArrowDrawing()
+    local frame = ODT.main_frame
+    ODT:StorePresetObject(nobj)
     if self.liveSessionActive then self:LiveSession_SendObject(nobj) end
     frame.toolbar:SetScript("OnUpdate",nil)
     for k,v in pairs(activeTextures) do
@@ -605,10 +605,10 @@ end
 
 local startx,starty,endx,endy
 ---StartLineDrawing
-function MDT:StartLineDrawing()
+function ODT:StartLineDrawing()
     drawingActive = true
-    local frame = MDT.main_frame
-    startx,starty = MDT:GetCursorPosition()
+    local frame = ODT.main_frame
+    startx,starty = ODT:GetCursorPosition()
     local line = getTexture()
     line:SetTexture("Interface\\AddOns\\MythicDungeonTools\\Textures\\Square_White")
     line:SetVertexColor(db.toolbar.color.r,db.toolbar.color.g,db.toolbar.color.b,db.toolbar.color.a)
@@ -624,29 +624,29 @@ function MDT:StartLineDrawing()
     ---new object
     ---d: size,lineFactor,sublevel,shown,colorstring,drawLayer,[smooth]
     ---l: x1,y1,x2,y2,...
-    nobj = { d={ db.toolbar.brushSize, 1.1, MDT:GetCurrentSubLevel(), true, MDT:RGBToHex(db.toolbar.color.r,db.toolbar.color.g,db.toolbar.color.b), nil, true}, l={}}
+    nobj = { d={ db.toolbar.brushSize, 1.1, ODT:GetCurrentSubLevel(), true, ODT:RGBToHex(db.toolbar.color.r,db.toolbar.color.g,db.toolbar.color.b), nil, true}, l={}}
     nobj.l = {}
 
-    local scale = MDT:GetScale()
+    local scale = ODT:GetScale()
     frame.toolbar:SetScript("OnUpdate", function(self, tick)
-        if not MouseIsOver(MDTScrollFrame) then return end
-        local currentDrawLayer = MDT:GetHighestFrameLevelAtCursor()
+        if not MouseIsOver(ODTScrollFrame) then return end
+        local currentDrawLayer = ODT:GetHighestFrameLevelAtCursor()
         drawLayer = max(drawLayer,currentDrawLayer)
-        endx,endy = MDT:GetCursorPosition()
+        endx,endy = ODT:GetCursorPosition()
         if endx~= startx and endy~=starty then
-            DrawLine(line, MDT.main_frame.mapPanelTile1, startx, starty, endx, endy, (db.toolbar.brushSize*0.3)*1.1*scale, 1.00,"TOPLEFT")
+            DrawLine(line, ODT.main_frame.mapPanelTile1, startx, starty, endx, endy, (db.toolbar.brushSize*0.3)*1.1*scale, 1.00,"TOPLEFT")
             line:SetDrawLayer(objectDrawLayer,drawLayer)
             line:Show()
-            MDT:DrawCircle(startx,starty,(db.toolbar.brushSize*0.3)*scale,db.toolbar.color,objectDrawLayer,drawLayer,true,nil,circle1,true)
-            MDT:DrawCircle(endx,endy,(db.toolbar.brushSize*0.3)*scale,db.toolbar.color,objectDrawLayer,drawLayer,true,nil,circle2,true)
+            ODT:DrawCircle(startx,starty,(db.toolbar.brushSize*0.3)*scale,db.toolbar.color,objectDrawLayer,drawLayer,true,nil,circle1,true)
+            ODT:DrawCircle(endx,endy,(db.toolbar.brushSize*0.3)*scale,db.toolbar.color,objectDrawLayer,drawLayer,true,nil,circle2,true)
             nobj.d[6] = drawLayer
         end
     end)
 end
 
 ---StopLineDrawing
-function MDT:StopLineDrawing()
-    local frame = MDT.main_frame
+function ODT:StopLineDrawing()
+    local frame = ODT.main_frame
     frame.toolbar:SetScript("OnUpdate",nil)
     for k,v in pairs(activeTextures) do
         v.isOwn = nil
@@ -660,29 +660,29 @@ function MDT:StopLineDrawing()
         local t =  i/numSegments
         local newx = startx+(endx-startx)*t
         local newy = starty+(endy-starty)*t
-        nobj.l[4*i-3] = MDT:Round(x,1)
-        nobj.l[4*i-2] = MDT:Round(y,1)
-        nobj.l[4*i-1] = MDT:Round(newx,1)
-        nobj.l[4*i] = MDT:Round(newy,1)
+        nobj.l[4*i-3] = ODT:Round(x,1)
+        nobj.l[4*i-2] = ODT:Round(y,1)
+        nobj.l[4*i-1] = ODT:Round(newx,1)
+        nobj.l[4*i] = ODT:Round(newy,1)
         x,y = newx,newy
     end
-    tinsert(nobj.l, MDT:Round(x,1))
-    tinsert(nobj.l, MDT:Round(y,1))
-    tinsert(nobj.l, MDT:Round(endx,1))
-    tinsert(nobj.l, MDT:Round(endy,1))
+    tinsert(nobj.l, ODT:Round(x,1))
+    tinsert(nobj.l, ODT:Round(y,1))
+    tinsert(nobj.l, ODT:Round(endx,1))
+    tinsert(nobj.l, ODT:Round(endy,1))
 
-    MDT:StorePresetObject(nobj)
+    ODT:StorePresetObject(nobj)
     if self.liveSessionActive then self:LiveSession_SendObject(nobj) end
     drawingActive = false
-    MDT:DrawAllPresetObjects()
+    ODT:DrawAllPresetObjects()
 end
 
 local oldx,oldy
 ---StartPencilDrawing
 ---Starts the pencil drawing script, fired on mouse down with pencil tool selected
-function MDT:StartPencilDrawing()
+function ODT:StartPencilDrawing()
     drawingActive = true
-    local frame = MDT.main_frame
+    local frame = ODT.main_frame
     oldx = nil
     oldy = nil
     local layerSublevel = -8
@@ -691,29 +691,29 @@ function MDT:StartPencilDrawing()
     ---new object
     ---d: size,lineFactor,sublevel,shown,colorstring,drawLayer,[smooth]
     ---l: x1,y1,x2,y2,...
-    nobj = { d={ db.toolbar.brushSize, 1.1, MDT:GetCurrentSubLevel(), true, MDT:RGBToHex(db.toolbar.color.r,db.toolbar.color.g,db.toolbar.color.b), 0, true}, l={}}
+    nobj = { d={ db.toolbar.brushSize, 1.1, ODT:GetCurrentSubLevel(), true, ODT:RGBToHex(db.toolbar.color.r,db.toolbar.color.g,db.toolbar.color.b), 0, true}, l={}}
     nobj.l = {}
 
     local lineIdx = 1
-    local scale = MDT:GetScale()
+    local scale = ODT:GetScale()
     frame.toolbar:SetScript("OnUpdate", function(self, tick)
-        if not MouseIsOver(MDTScrollFrame) then return end
-        local currentDrawLayer = MDT:GetHighestFrameLevelAtCursor()
+        if not MouseIsOver(ODTScrollFrame) then return end
+        local currentDrawLayer = ODT:GetHighestFrameLevelAtCursor()
         layerSublevel = max(layerSublevel,currentDrawLayer)
-        local x,y = MDT:GetCursorPosition()
-        local mapScale = MDT.main_frame.mapPanelFrame:GetScale()
+        local x,y = ODT:GetCursorPosition()
+        local mapScale = ODT.main_frame.mapPanelFrame:GetScale()
         local threshold = thresholdDefault * 1/mapScale
         if not oldx or not oldy then
             oldx,oldy = x,y
             return
         end
         if (oldx and abs(x-oldx)>threshold) or (oldy and abs(y-oldy)>threshold)  then
-            MDT:DrawLine(oldx,oldy,x,y,(db.toolbar.brushSize*0.3)*scale,db.toolbar.color,true,objectDrawLayer,layerSublevel,nil,true)
+            ODT:DrawLine(oldx,oldy,x,y,(db.toolbar.brushSize*0.3)*scale,db.toolbar.color,true,objectDrawLayer,layerSublevel,nil,true)
             nobj.d[6] = layerSublevel
-            nobj.l[lineIdx] = MDT:Round(oldx,1)
-            nobj.l[lineIdx+1] = MDT:Round(oldy,1)
-            nobj.l[lineIdx+2] = MDT:Round(x,1)
-            nobj.l[lineIdx+3] = MDT:Round(y,1)
+            nobj.l[lineIdx] = ODT:Round(oldx,1)
+            nobj.l[lineIdx+1] = ODT:Round(oldy,1)
+            nobj.l[lineIdx+2] = ODT:Round(x,1)
+            nobj.l[lineIdx+3] = ODT:Round(y,1)
             lineIdx = lineIdx + 4
             oldx,oldy = x,y
         end
@@ -722,23 +722,23 @@ end
 
 ---StopPencilDrawing
 ---End the pencil drawing script, fired on mouse up with the pencil tool selected
-function MDT:StopPencilDrawing()
-    local frame = MDT.main_frame
-    local x,y = MDT:GetCursorPosition()
-    local layerSublevel = MDT:GetHighestFrameLevelAtCursor()
-    local scale = MDT:GetScale()
+function ODT:StopPencilDrawing()
+    local frame = ODT.main_frame
+    local x,y = ODT:GetCursorPosition()
+    local layerSublevel = ODT:GetHighestFrameLevelAtCursor()
+    local scale = ODT:GetScale()
     --finish line
     if x~=oldx or y~=oldy then
-        MDT:DrawLine(oldx,oldy,x,y,(db.toolbar.brushSize*0.3)*scale,db.toolbar.color,true,objectDrawLayer,layerSublevel)
+        ODT:DrawLine(oldx,oldy,x,y,(db.toolbar.brushSize*0.3)*scale,db.toolbar.color,true,objectDrawLayer,layerSublevel)
         --store it
         local size = 0
         for k,v in ipairs(nobj.l) do
             size = size+1
         end
-        nobj.l[size+1] = MDT:Round(oldx,1)
-        nobj.l[size+2] = MDT:Round(oldy,1)
-        nobj.l[size+3] = MDT:Round(x,1)
-        nobj.l[size+4] = MDT:Round(y,1)
+        nobj.l[size+1] = ODT:Round(oldx,1)
+        nobj.l[size+2] = ODT:Round(oldy,1)
+        nobj.l[size+3] = ODT:Round(x,1)
+        nobj.l[size+4] = ODT:Round(y,1)
     end
     frame.toolbar:SetScript("OnUpdate",nil)
     --clear own flags
@@ -752,8 +752,8 @@ function MDT:StopPencilDrawing()
     end
     if lineCount > 0 then
         --draw end circle, dont need to store it as we draw it when we restore the line from db
-        MDT:DrawCircle(x,y,db.toolbar.brushSize*0.3*scale,db.toolbar.color,objectDrawLayer,layerSublevel)
-        MDT:StorePresetObject(nobj)
+        ODT:DrawCircle(x,y,db.toolbar.brushSize*0.3*scale,db.toolbar.color,objectDrawLayer,layerSublevel)
+        ODT:StorePresetObject(nobj)
         --nobj will be scaled after StorePresetObject so no need to rescale again
         if self.liveSessionActive then self:LiveSession_SendObject(nobj) end
     end
@@ -764,17 +764,17 @@ end
 ---StartMovingObject
 local objectIndex
 local originalX,originalY
-function MDT:StartMovingObject()
+function ODT:StartMovingObject()
     --we have to redraw all objects first, as the objectIndex needs to be set on every texture
-    MDT:DrawAllPresetObjects()
+    ODT:DrawAllPresetObjects()
     drawingActive = true
-    local frame = MDT.main_frame
-    objectIndex = MDT:GetHighestPresetObjectIndexAtCursor()
-    local startx,starty = MDT:GetCursorPosition()
-    originalX,originalY = MDT:GetCursorPosition()
+    local frame = ODT.main_frame
+    objectIndex = ODT:GetHighestPresetObjectIndexAtCursor()
+    local startx,starty = ODT:GetCursorPosition()
+    originalX,originalY = ODT:GetCursorPosition()
     frame.toolbar:SetScript("OnUpdate", function(self, tick)
-        if not MouseIsOver(MDTScrollFrame) then return end
-        local x,y = MDT:GetCursorPosition()
+        if not MouseIsOver(ODTScrollFrame) then return end
+        local x,y = ODT:GetCursorPosition()
         if x~=startx or y ~=starty then
             for j,tex in pairs(activeTextures) do
                 if tex.objectIndex == objectIndex then
@@ -784,14 +784,14 @@ function MDT:StartMovingObject()
                     end
                 end
             end
-            startx,starty = MDT:GetCursorPosition()
+            startx,starty = ODT:GetCursorPosition()
         end
     end)
 end
 
 ---HideAllPresetObjects
 ---Hide textures during rescaling
-function MDT:HideAllPresetObjects()
+function ODT:HideAllPresetObjects()
     --drawings
     for _,tex in pairs(activeTextures) do
         tex:Hide()
@@ -806,12 +806,12 @@ function MDT:HideAllPresetObjects()
 end
 
 ---StopMovingDrawing
-function MDT:StopMovingObject()
-    local frame = MDT.main_frame
+function ODT:StopMovingObject()
+    local frame = ODT.main_frame
     frame.toolbar:SetScript("OnUpdate",nil)
     if objectIndex then
-        local newX,newY = MDT:GetCursorPosition()
-        MDT:UpdatePresetObjectOffsets(objectIndex,originalX-newX,originalY-newY)
+        local newX,newY = ODT:GetCursorPosition()
+        ODT:UpdatePresetObjectOffsets(objectIndex,originalX-newX,originalY-newY)
         if self.liveSessionActive then self:LiveSession_SendObjectOffsets(objectIndex,originalX-newX,originalY-newY) end
     end
     objectIndex = nil
@@ -819,7 +819,7 @@ function MDT:StopMovingObject()
 end
 
 ---GetHighestPresetObjectIndexAtCursor
-function MDT:GetHighestPresetObjectIndexAtCursor()
+function ODT:GetHighestPresetObjectIndexAtCursor()
     local currentSublevel = -8
     local highestTexture
     for k,v in pairs(activeTextures) do
@@ -838,18 +838,18 @@ end
 
 ---StartEraserDrawing
 local changedObjects = {}
-function MDT:StartEraserDrawing()
-    MDT:DrawAllPresetObjects()
+function ODT:StartEraserDrawing()
+    ODT:DrawAllPresetObjects()
     drawingActive = true
-    local frame = MDT.main_frame
+    local frame = ODT.main_frame
     local startx,starty
-    local scale = MDT:GetScale()
+    local scale = ODT:GetScale()
     twipe(changedObjects)
     frame.toolbar:SetScript("OnUpdate", function(self, tick)
-        if not MouseIsOver(MDTScrollFrame) then return end
-        local x,y = MDT:GetCursorPosition()
+        if not MouseIsOver(ODTScrollFrame) then return end
+        local x,y = ODT:GetCursorPosition()
         if x~=startx or y ~=starty then
-            local highestObjectIdx = MDT:GetHighestPresetObjectIndexAtCursor()
+            local highestObjectIdx = ODT:GetHighestPresetObjectIndexAtCursor()
             for j,tex in pairs(activeTextures) do
                 if MouseIsOver(tex) and tex:IsShown() and tex.objectIndex == highestObjectIdx  then --tex.coords means this is a line
                     tex:Hide()
@@ -864,7 +864,7 @@ function MDT:StartEraserDrawing()
                             end
                         end
                         --delete saved lines
-                        local currentPreset = MDT:GetCurrentPreset()
+                        local currentPreset = ODT:GetCurrentPreset()
                         for objectIndex,obj in pairs(currentPreset.objects) do
                             if objectIndex == highestObjectIdx then
                                 for coordIdx,coord in pairs(obj.l) do
@@ -886,36 +886,36 @@ function MDT:StartEraserDrawing()
 end
 
 ---StopEraserDrawing
-function MDT:StopEraserDrawing()
-    local frame = MDT.main_frame
+function ODT:StopEraserDrawing()
+    local frame = ODT.main_frame
     frame.toolbar:SetScript("OnUpdate",nil)
     if self.liveSessionActive then self:LiveSession_SendUpdatedObjects(changedObjects) end
-    MDT:DrawAllPresetObjects()
+    ODT:DrawAllPresetObjects()
     drawingActive = false
 end
 ---StartNoteDrawing
-function MDT:StartNoteDrawing()
+function ODT:StartNoteDrawing()
     --check if we have less than 25 notes
     if notePoolCollection and notePoolCollection.pools.QuestPinTemplate.numActiveObjects>24 then
-        MDT:UpdateSelectedToolbarTool()
+        ODT:UpdateSelectedToolbarTool()
         return
     end
     ---new object for storage
     ---x,y,sublevel,shown,text,n=true
-    local x,y = MDT:GetCursorPosition()
-    nobj = {d={ x, y, MDT:GetCurrentSubLevel(), true, ""}}
+    local x,y = ODT:GetCursorPosition()
+    nobj = {d={ x, y, ODT:GetCurrentSubLevel(), true, ""}}
     nobj.n = true
-    MDT:StorePresetObject(nobj)
+    ODT:StorePresetObject(nobj)
     if self.liveSessionActive then self:LiveSession_SendObject(nobj) end
-    MDT:DrawAllPresetObjects()
+    ODT:DrawAllPresetObjects()
 
     if not IsShiftKeyDown() then
-        MDT:UpdateSelectedToolbarTool()
+        ODT:UpdateSelectedToolbarTool()
     end
 end
 
 ---DrawCircle
-function MDT:DrawCircle(x, y, size, color, layer, layerSublevel, isOwn, objectIndex, tex, noinsert, extrax, extray)
+function ODT:DrawCircle(x, y, size, color, layer, layerSublevel, isOwn, objectIndex, tex, noinsert, extrax, extray)
     local circle = tex or getTexture()
     if not layer then layer = objectDrawLayer end
     circle:SetDrawLayer(layer, layerSublevel)
@@ -924,7 +924,7 @@ function MDT:DrawCircle(x, y, size, color, layer, layerSublevel, isOwn, objectIn
     circle:SetWidth(1.1*size)
     circle:SetHeight(1.1*size)
     circle:ClearAllPoints()
-    circle:SetPoint("CENTER", MDT.main_frame.mapPanelTile1,"TOPLEFT",x,y)
+    circle:SetPoint("CENTER", ODT.main_frame.mapPanelTile1,"TOPLEFT",x,y)
     circle:Show()
     circle.isOwn = isOwn
     circle.objectIndex = objectIndex
@@ -935,12 +935,12 @@ function MDT:DrawCircle(x, y, size, color, layer, layerSublevel, isOwn, objectIn
 end
 
 ---DrawLine
-function MDT:DrawLine(x, y, a, b, size, color, smooth, layer, layerSublevel, lineFactor, isOwn, objectIndex)
+function ODT:DrawLine(x, y, a, b, size, color, smooth, layer, layerSublevel, lineFactor, isOwn, objectIndex)
     local line = getTexture()
     if not layer then layer = objectDrawLayer end
     line:SetTexture("Interface\\AddOns\\MythicDungeonTools\\Textures\\Square_White")
     line:SetVertexColor(color.r,color.g,color.b,color.a)
-    DrawLine(line, MDT.main_frame.mapPanelTile1, x, y, a, b, size, lineFactor and lineFactor or 1.1,"TOPLEFT")
+    DrawLine(line, ODT.main_frame.mapPanelTile1, x, y, a, b, size, lineFactor and lineFactor or 1.1,"TOPLEFT")
     line:SetDrawLayer(layer, layerSublevel)
     line:Show()
     line.isOwn = isOwn
@@ -948,12 +948,12 @@ function MDT:DrawLine(x, y, a, b, size, color, smooth, layer, layerSublevel, lin
     line.coords = {x,y,a,b}
     tinsert(activeTextures,line)
     if smooth == true  then
-        MDT:DrawCircle(x,y,size,color,layer,layerSublevel,isOwn,objectIndex)
+        ODT:DrawCircle(x,y,size,color,layer,layerSublevel,isOwn,objectIndex)
     end
 end
 
 ---DrawTriangle
-function MDT:DrawTriangle(x, y, rotation, size, color, layer, layerSublevel, isOwn, objectIndex)
+function ODT:DrawTriangle(x, y, rotation, size, color, layer, layerSublevel, isOwn, objectIndex)
     local triangle = getTexture()
     if not layer then layer = objectDrawLayer end
     triangle:SetTexture("Interface\\AddOns\\MythicDungeonTools\\Textures\\triangle")
@@ -963,7 +963,7 @@ function MDT:DrawTriangle(x, y, rotation, size, color, layer, layerSublevel, isO
     triangle:SetHeight(size)
     triangle:SetRotation(rotation+pi)
     triangle:ClearAllPoints()
-    triangle:SetPoint("CENTER", MDT.main_frame.mapPanelTile1,"TOPLEFT",x,y)
+    triangle:SetPoint("CENTER", ODT.main_frame.mapPanelTile1,"TOPLEFT",x,y)
     triangle:SetDrawLayer(layer, layerSublevel)
     triangle.isOwn = isOwn
     triangle.objectIndex = objectIndex
@@ -974,15 +974,15 @@ local noteEditbox
 
 --store text in nobj
 local function updateNoteObjText(text,note)
-    local currentPreset = MDT:GetCurrentPreset()
+    local currentPreset = ODT:GetCurrentPreset()
     currentPreset.objects[note.objectIndex].d[5]=text
-    if MDT.liveSessionActive then MDT:LiveSession_SendNoteCommand("text",note.objectIndex,text) end
+    if ODT.liveSessionActive then ODT:LiveSession_SendNoteCommand("text",note.objectIndex,text) end
 end
 local function deleteNoteObj(note)
-    local currentPreset = MDT:GetCurrentPreset()
+    local currentPreset = ODT:GetCurrentPreset()
     tremove(currentPreset.objects,note.objectIndex)
-    if MDT.liveSessionActive then MDT:LiveSession_SendNoteCommand("delete",note.objectIndex,"0") end
-    MDT:DrawAllPresetObjects()
+    if ODT.liveSessionActive then ODT:LiveSession_SendNoteCommand("delete",note.objectIndex,"0") end
+    ODT:DrawAllPresetObjects()
 end
 
 local function makeNoteEditbox()
@@ -1021,10 +1021,10 @@ local function makeNoteEditbox()
     ]]
     editbox.frame:Hide()
     editbox:AddChild(editbox.multiBox)
-    MDT:FixAceGUIShowHide(editbox,nil,nil,true)
+    ODT:FixAceGUIShowHide(editbox,nil,nil,true)
     editbox.frame:SetScript("OnShow",function()
-        hooksecurefunc(MDT, "MouseDownHook", function() editbox.frame:Hide() end)
-        hooksecurefunc(MDT, "ZoomMap", function() editbox.frame:Hide() end)
+        hooksecurefunc(ODT, "MouseDownHook", function() editbox.frame:Hide() end)
+        hooksecurefunc(ODT, "ZoomMap", function() editbox.frame:Hide() end)
     end)
 
     return editbox
@@ -1070,18 +1070,18 @@ do
 end
 
 ---DrawNote
-function MDT:DrawNote(x, y, text, objectIndex)
+function ODT:DrawNote(x, y, text, objectIndex)
     if not notePoolCollection then
         notePoolCollection = CreateFramePoolCollection()
-        notePoolCollection:CreatePool("Button", MDT.main_frame.mapPanelFrame, "QuestPinTemplate")
+        notePoolCollection:CreatePool("Button", ODT.main_frame.mapPanelFrame, "QuestPinTemplate")
     end
-    local scale = MDT:GetScale()
+    local scale = ODT:GetScale()
     --setup
     local note = notePoolCollection:Acquire("QuestPinTemplate")
     note.noteIdx = notePoolCollection.pools.QuestPinTemplate.numActiveObjects
     note.objectIndex = objectIndex
     note:ClearAllPoints()
-    note:SetPoint("CENTER", MDT.main_frame.mapPanelTile1,"TOPLEFT",x,y)
+    note:SetPoint("CENTER", ODT.main_frame.mapPanelTile1,"TOPLEFT",x,y)
     note:SetSize(12*scale,12*scale)
     note.NormalTexture:SetSize(15*scale, 15*scale)
     note.PushedTexture:SetSize(15*scale, 15*scale)

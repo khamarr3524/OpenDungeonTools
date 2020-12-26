@@ -1,4 +1,4 @@
-local Type, Version = "MDTNewPullButton", 1
+local Type, Version = "ODTNewPullButton", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 local L = MDT.L
 local width,height = 248,32
@@ -92,7 +92,7 @@ local methods = {
 
 --Constructor
 local function Constructor()
-    local name = "MDTNewPullButton"..AceGUI:GetNextWidgetNum(Type);
+    local name = "ODTNewPullButton"..AceGUI:GetNextWidgetNum(Type);
     local button = CreateFrame("BUTTON", name, UIParent, "OptionsListButtonTemplate");
     button:SetHeight(height);
     button:SetWidth(width);

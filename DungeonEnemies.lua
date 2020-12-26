@@ -1,18 +1,18 @@
-local MDT = MDT
+local ODT = ODT
 local db
 local tonumber,tinsert,slen,pairs,ipairs,tostring,next,type,sformat,twipe,max,tremove,DrawLine = tonumber,table.insert,string.len,pairs,ipairs,tostring,next,type,string.format,table.wipe,math.max,table.remove,DrawLine
-local L = MDT.L
+local L = ODT.L
 local blips = {}
 local preset
 local selectedGreen = {34/255,139/255,34/255,0.7}
 local patrolColor = {0,0.5,1,0.8}
 local corruptedColor = {1,0,1,0.8}
 
-function MDT:GetDungeonEnemyBlips()
+function ODT:GetDungeonEnemyBlips()
     return blips
 end
 
-MDT.reapingStatic = {
+ODT.reapingStatic = {
     ["148716"] = {
         ["name"] = L["Risen Soul"],
         ["iconTexture"] = "Interface\\Icons\\Ability_warlock_soulsiphon",
@@ -37,7 +37,7 @@ MDT.reapingStatic = {
 }
 
 --From http://wow.gamepedia.com/UI_coordinates
-function MDT:DoFramesOverlap(frameA, frameB, offset)
+function ODT:DoFramesOverlap(frameA, frameB, offset)
     if not frameA or not frameB then return	end
     offset = offset or 0
     --frameA = frameA.texture_Background
@@ -66,7 +66,7 @@ function MDT:DoFramesOverlap(frameA, frameB, offset)
 end
 
 
-MDTDungeonEnemyMixin = {};
+ODTDungeonEnemyMixin = {};
 
 local defaultSizes = {
     ["texture_Background"] = 20,
@@ -83,55 +83,55 @@ local defaultSizes = {
     ["texture_DragUp"] = 8,
 }
 
-function MDTDungeonEnemyMixin:updateSizes(scale)
+function ODTDungeonEnemyMixin:updateSizes(scale)
     for tex,size in pairs(defaultSizes) do
         self[tex]:SetSize(size*self.normalScale*scale,size*self.normalScale*scale)
     end
 end
 
-function MDTDungeonEnemyMixin:OnEnter()
+function ODTDungeonEnemyMixin:OnEnter()
     self:updateSizes(1.2)
     self:SetFrameLevel(self:GetFrameLevel()+5)
     self:DisplayPatrol(true)
-    MDT:DisplayBlipTooltip(self,true)
+    ODT:DisplayBlipTooltip(self,true)
     if self.data.corrupted then
         --self.texture_DragDown:Show()
         --self.texture_DragLeft:Show()
         --self.texture_DragRight:Show()
         --self.texture_DragUp:Show()
         if not self.selected then
-            local _,active = MDT.poi_framePools:GetPool("VignettePinTemplate"):EnumerateActive()
+            local _,active = ODT.poi_framePools:GetPool("VignettePinTemplate"):EnumerateActive()
             for poiFrame,_ in pairs(active) do
                 if poiFrame.spireIndex and poiFrame.npcId == self.data.id then
                     poiFrame.HighlightTexture:Show()
                     self.spireFrame = poiFrame
-                    self.animatedLine = MDT:ShowAnimatedLine(MDT.main_frame.mapPanelFrame,self.spireFrame,self,nil,nil,nil,nil,nil,self.selected,self.animatedLine)
+                    self.animatedLine = ODT:ShowAnimatedLine(ODT.main_frame.mapPanelFrame,self.spireFrame,self,nil,nil,nil,nil,nil,self.selected,self.animatedLine)
                     self.spireFrame.animatedLine = self.animatedLine
                     break
                 end
             end
-            local connectedDoor = MDT:FindConnectedDoor(self.data.id)
+            local connectedDoor = ODT:FindConnectedDoor(self.data.id)
             if connectedDoor then
-                self.animatedLine = MDT:ShowAnimatedLine(MDT.main_frame.mapPanelFrame,connectedDoor,self,nil,nil,nil,nil,nil,self.selected,self.animatedLine)
+                self.animatedLine = ODT:ShowAnimatedLine(ODT.main_frame.mapPanelFrame,connectedDoor,self,nil,nil,nil,nil,nil,self.selected,self.animatedLine)
             end
         end
     end
     if not db.devMode then
-        self.fontstring_Text1:SetText(MDT:IsCurrentPresetTeeming() and self.data.teemingCount or self.data.count)
+        self.fontstring_Text1:SetText(ODT:IsCurrentPresetTeeming() and self.data.teemingCount or self.data.count)
         if not self.clone.g then
             self.fontstring_Text1:Show()
             return
         end
         for _,blip in pairs(blips) do
             if blip.clone.g == self.clone.g then
-                blip.fontstring_Text1:SetText(MDT:IsCurrentPresetTeeming() and blip.data.teemingCount or blip.data.count)
+                blip.fontstring_Text1:SetText(ODT:IsCurrentPresetTeeming() and blip.data.teemingCount or blip.data.count)
                 blip.fontstring_Text1:Show()
             end
         end
     end
 end
 
-function MDTDungeonEnemyMixin:OnLeave()
+function ODTDungeonEnemyMixin:OnLeave()
     self:updateSizes(1)
     self:SetFrameLevel(self:GetFrameLevel()-5)
     if db.devMode then
@@ -139,13 +139,13 @@ function MDTDungeonEnemyMixin:OnLeave()
     else
         self:DisplayPatrol(false)
     end
-    MDT:DisplayBlipTooltip(self,false)
+    ODT:DisplayBlipTooltip(self,false)
     if self.data.corrupted then
         self.texture_DragDown:Hide()
         self.texture_DragLeft:Hide()
         self.texture_DragRight:Hide()
         self.texture_DragUp:Hide()
-        local _,active = MDT.poi_framePools:GetPool("VignettePinTemplate"):EnumerateActive()
+        local _,active = ODT.poi_framePools:GetPool("VignettePinTemplate"):EnumerateActive()
         for poiFrame,_ in pairs(active) do
             if poiFrame.spireIndex and poiFrame.npcId == self.data.id then
                 poiFrame.HighlightTexture:Hide()
@@ -153,7 +153,7 @@ function MDTDungeonEnemyMixin:OnLeave()
             end
         end
         if not self.selected then
-            MDT:HideAnimatedLine(self.animatedLine)
+            ODT:HideAnimatedLine(self.animatedLine)
         end
     end
     if not db.devMode then
@@ -176,28 +176,28 @@ local function setUpMouseHandlers(self)
     local tempPulls
     self:SetScript("OnDragStart", function()
         local x,y,scale
-        preset = MDT:GetCurrentPreset()
-        tempPulls = MDT:DeepCopy(preset.value.pulls)
+        preset = ODT:GetCurrentPreset()
+        tempPulls = ODT:DeepCopy(preset.value.pulls)
         local targetPull
         local _, _, _, blipX, blipY = self:GetPoint()
         self:SetScript("OnUpdate",function()
-            local nx,ny = MDT:GetCursorPosition()
+            local nx,ny = ODT:GetCursorPosition()
             if x~=nx or y~=ny then
                 x,y = nx,ny
                 --find closest pull and measure distance
-                local pullIdx,centerX,centerY = MDT:FindClosestPull(x,y)
+                local pullIdx,centerX,centerY = ODT:FindClosestPull(x,y)
                 if not centerX then return end
                 local distBlip = (centerX-blipX)^2+(centerY-blipY)^2
                 local distCursor = (centerX-x)^2+(centerY-y)^2
                 local isClose = distCursor<1/3*distBlip or distBlip < 150
                 if not isClose then
                     targetPull = nil
-                    MDT:DungeonEnemies_AddOrRemoveBlipToCurrentPull(self, false, IsControlKeyDown(),tempPulls,nil,true)
-                    MDT:DungeonEnemies_UpdateSelected(MDT:GetCurrentPull(),tempPulls)
+                    ODT:DungeonEnemies_AddOrRemoveBlipToCurrentPull(self, false, IsControlKeyDown(),tempPulls,nil,true)
+                    ODT:DungeonEnemies_UpdateSelected(ODT:GetCurrentPull(),tempPulls)
                 elseif pullIdx~=targetPull then
                     targetPull = pullIdx
-                    MDT:DungeonEnemies_AddOrRemoveBlipToCurrentPull(self, true, IsControlKeyDown(),tempPulls,pullIdx,true)
-                    MDT:DungeonEnemies_UpdateSelected(MDT:GetCurrentPull(),tempPulls)
+                    ODT:DungeonEnemies_AddOrRemoveBlipToCurrentPull(self, true, IsControlKeyDown(),tempPulls,pullIdx,true)
+                    ODT:DungeonEnemies_UpdateSelected(ODT:GetCurrentPull(),tempPulls)
                 end
             end
         end)
@@ -205,10 +205,10 @@ local function setUpMouseHandlers(self)
     self:SetScript("OnDragStop", function()
         self:SetScript("OnUpdate",nil)
         preset.value.pulls = tempPulls
-        MDT:DungeonEnemies_UpdateSelected(MDT:GetCurrentPull(),tempPulls)
-        MDT:ReloadPullButtons()
-        if MDT.liveSessionActive and MDT:GetCurrentPreset().uid == MDT.livePresetUID then
-            MDT:LiveSession_SendPulls(MDT:GetPulls())
+        ODT:DungeonEnemies_UpdateSelected(ODT:GetCurrentPull(),tempPulls)
+        ODT:ReloadPullButtons()
+        if ODT.liveSessionActive and ODT:GetCurrentPreset().uid == ODT.livePresetUID then
+            ODT:LiveSession_SendPulls(ODT:GetPulls())
         end
     end)
 end
@@ -218,9 +218,9 @@ local function setUpMouseHandlersAwakened(self,clone,scale,riftOffsets)
     local oldX,oldY
     self:SetScript("OnMouseDown",function(self, button)
         if button == "LeftButton" then
-            riftOffsets = MDT:GetRiftOffsets()
-            local x,y = MDT:GetCursorPosition()
-            local scale = MDT:GetScale()
+            riftOffsets = ODT:GetRiftOffsets()
+            local x,y = ODT:GetCursorPosition()
+            local scale = ODT:GetScale()
             x = x*(1/scale)
             y = y*(1/scale)
             oldX = riftOffsets and riftOffsets[self.data.id] and riftOffsets[self.data.id].x or clone.x
@@ -231,52 +231,52 @@ local function setUpMouseHandlersAwakened(self,clone,scale,riftOffsets)
     end)
     self:SetScript("OnDragStart", function()
         self:StartMoving()
-        MDT.draggedBlip = self
-        local _,activeDoors = MDT.poi_framePools:GetPool("MapLinkPinTemplate"):EnumerateActive()
-        riftOffsets = MDT:GetRiftOffsets()
+        ODT.draggedBlip = self
+        local _,activeDoors = ODT.poi_framePools:GetPool("MapLinkPinTemplate"):EnumerateActive()
+        riftOffsets = ODT:GetRiftOffsets()
         self:SetScript("OnUpdate",function()
             for poiFrame,_ in pairs(activeDoors) do
-                if MDT:DoFramesOverlap(self,poiFrame,-10) then
+                if ODT:DoFramesOverlap(self,poiFrame,-10) then
                     poiFrame.HighlightTexture:Show()
                 else
                     poiFrame.HighlightTexture:Hide()
                 end
             end
             --reposition animated line
-            local x,y = MDT:GetCursorPosition()
-            local scale = MDT:GetScale()
+            local x,y = ODT:GetCursorPosition()
+            local scale = ODT:GetScale()
             x = x*(1/scale)
             y = y*(1/scale)
             x = x-xOffset
             y = y-yOffset
             if x ~= self.adjustedX or y~= self.adjustedY then
-                local sizex,sizey = MDT:GetDefaultMapPanelSize()
+                local sizex,sizey = ODT:GetDefaultMapPanelSize()
                 x = x<=0 and 0 or x>=sizex and sizex or x
                 y = y>=0 and 0 or y<=(-1)*sizey and (-1)*sizey or y
                 self.adjustedX = x
                 self.adjustedY = y
-                local connectedDoor = MDT:FindConnectedDoor(self.data.id)
-                self.animatedLine = MDT:ShowAnimatedLine(MDT.main_frame.mapPanelFrame,connectedDoor or self.spireFrame ,self,nil,nil,nil,nil,nil,self.selected,self.animatedLine)
+                local connectedDoor = ODT:FindConnectedDoor(self.data.id)
+                self.animatedLine = ODT:ShowAnimatedLine(ODT.main_frame.mapPanelFrame,connectedDoor or self.spireFrame ,self,nil,nil,nil,nil,nil,self.selected,self.animatedLine)
                 riftOffsets[self.data.id] = riftOffsets[self.data.id] or {}
                 riftOffsets[self.data.id].x = x
                 riftOffsets[self.data.id].y = y
                 self:ClearAllPoints()
-                self:SetPoint("CENTER", MDT.main_frame.mapPanelTile1,"TOPLEFT",x*scale,y*scale)
+                self:SetPoint("CENTER", ODT.main_frame.mapPanelTile1,"TOPLEFT",x*scale,y*scale)
             end
         end)
     end)
     self:SetScript("OnDragStop", function()
-        MDT.draggedBlip = nil
-        riftOffsets = MDT:GetRiftOffsets()
+        ODT.draggedBlip = nil
+        riftOffsets = ODT:GetRiftOffsets()
         self:StopMovingOrSizing()
         self:SetScript("OnUpdate",nil)
         self:ClearAllPoints()
-        self:SetPoint("CENTER", MDT.main_frame.mapPanelTile1,"TOPLEFT",self.adjustedX*scale,self.adjustedY*scale)
+        self:SetPoint("CENTER", ODT.main_frame.mapPanelTile1,"TOPLEFT",self.adjustedX*scale,self.adjustedY*scale)
         --dragged ontop of door
         --find doors,check overlap,break,swap sublevel,change poi sublevel
-        local _,active = MDT.poi_framePools:GetPool("MapLinkPinTemplate"):EnumerateActive()
+        local _,active = ODT.poi_framePools:GetPool("MapLinkPinTemplate"):EnumerateActive()
         for poiFrame,_ in pairs(active) do
-            if MDT:DoFramesOverlap(self,poiFrame,-10) then
+            if ODT:DoFramesOverlap(self,poiFrame,-10) then
                 riftOffsets[self.data.id].sublevel = poiFrame.target
                 riftOffsets[self.data.id].homeSublevel = self.clone.sublevel or 1
                 riftOffsets[self.data.id].connections = riftOffsets[self.data.id].connections or {}
@@ -289,7 +289,7 @@ local function setUpMouseHandlersAwakened(self,clone,scale,riftOffsets)
                         break
                     end
                 end
-                if shouldAdd then tinsert(c,{ connectionIndex=poiFrame.poi.connectionIndex, source= MDT:GetCurrentSubLevel()+0, target=poiFrame.poi.target}) end
+                if shouldAdd then tinsert(c,{ connectionIndex=poiFrame.poi.connectionIndex, source= ODT:GetCurrentSubLevel()+0, target=poiFrame.poi.target}) end
                 if riftOffsets[self.data.id].sublevel == (self.clone.sublevel or 1)then
                     riftOffsets[self.data.id].sublevel = nil
                     riftOffsets[self.data.id].homeSublevel = nil
@@ -300,35 +300,35 @@ local function setUpMouseHandlersAwakened(self,clone,scale,riftOffsets)
                 break
             end
         end
-        if MDT.liveSessionActive and MDT:GetCurrentPreset().uid == MDT.livePresetUID then
-            MDT:LiveSession_SendCorruptedPositions(preset.value.riftOffsets)
+        if ODT.liveSessionActive and ODT:GetCurrentPreset().uid == ODT.livePresetUID then
+            ODT:LiveSession_SendCorruptedPositions(preset.value.riftOffsets)
         end
     end)
 end
 
-function MDTDungeonEnemyMixin:OnClick(button, down)
+function ODTDungeonEnemyMixin:OnClick(button, down)
 
     if button == "LeftButton" then
         if IsShiftKeyDown() then
-            local newPullIdx = MDT:GetCurrentPull() + 1
-            MDT:PresetsAddPull(newPullIdx)
-            MDT:GetCurrentPreset().value.selection = { newPullIdx}
-            MDT:ReloadPullButtons()
-            MDT:SetSelectionToPull(newPullIdx)
+            local newPullIdx = ODT:GetCurrentPull() + 1
+            ODT:PresetsAddPull(newPullIdx)
+            ODT:GetCurrentPreset().value.selection = { newPullIdx}
+            ODT:ReloadPullButtons()
+            ODT:SetSelectionToPull(newPullIdx)
             local _
-            MDT:ColorAllPulls(_, newPullIdx)
-            --if MDT:GetPullsNum() == 2 then MDT:SetAutomaticColor(1) end
+            ODT:ColorAllPulls(_, newPullIdx)
+            --if ODT:GetPullsNum() == 2 then ODT:SetAutomaticColor(1) end
         end
-        MDT:DungeonEnemies_AddOrRemoveBlipToCurrentPull(self,not self.selected,IsControlKeyDown())
-        MDT:DungeonEnemies_UpdateSelected(MDT:GetCurrentPull())
-        MDT:UpdateProgressbar()
-        MDT:ReloadPullButtons()
-        if MDT.liveSessionActive and MDT:GetCurrentPreset().uid == MDT.livePresetUID then
-            MDT:LiveSession_SendPulls(MDT:GetPulls())
+        ODT:DungeonEnemies_AddOrRemoveBlipToCurrentPull(self,not self.selected,IsControlKeyDown())
+        ODT:DungeonEnemies_UpdateSelected(ODT:GetCurrentPull())
+        ODT:UpdateProgressbar()
+        ODT:ReloadPullButtons()
+        if ODT.liveSessionActive and ODT:GetCurrentPreset().uid == ODT.livePresetUID then
+            ODT:LiveSession_SendPulls(ODT:GetPulls())
         end
         if self.data.corrupted then
             local connectedFrame
-            local _,active = MDT.poi_framePools:GetPool("VignettePinTemplate"):EnumerateActive()
+            local _,active = ODT.poi_framePools:GetPool("VignettePinTemplate"):EnumerateActive()
             for poiFrame,_ in pairs(active) do
                 if poiFrame.spireIndex and poiFrame.npcId and poiFrame.npcId == self.data.id then
                     if self.selected then
@@ -352,18 +352,18 @@ function MDTDungeonEnemyMixin:OnClick(button, down)
                     break
                 end
             end
-            local connectedDoor = MDT:FindConnectedDoor(self.data.id)
+            local connectedDoor = ODT:FindConnectedDoor(self.data.id)
             connectedFrame = connectedDoor or connectedFrame
-            self.animatedLine = MDT:ShowAnimatedLine(MDT.main_frame.mapPanelFrame,connectedFrame,self,nil,nil,nil,nil,nil,self.selected,self.animatedLine)
+            self.animatedLine = ODT:ShowAnimatedLine(ODT.main_frame.mapPanelFrame,connectedFrame,self,nil,nil,nil,nil,nil,self.selected,self.animatedLine)
             connectedFrame.animatedLine = self.animatedLine
-            if MDT.liveSessionActive and MDT:GetCurrentPreset().uid == MDT.livePresetUID then
-                MDT:LiveSession_SendCorruptedPositions(preset.value.riftOffsets)
+            if ODT.liveSessionActive and ODT:GetCurrentPreset().uid == ODT.livePresetUID then
+                ODT:LiveSession_SendCorruptedPositions(preset.value.riftOffsets)
             end
         end
     elseif button == "RightButton" then
         if db.devMode then
             if IsAltKeyDown() then
-                tremove(MDT.dungeonEnemies[db.currentDungeonIdx][self.enemyIdx].clones,self.cloneIdx)
+                tremove(ODT.dungeonEnemies[db.currentDungeonIdx][self.enemyIdx].clones,self.cloneIdx)
                 self:Hide()
             else
                 self.devSelected = (not self.devSelected) or nil
@@ -379,9 +379,9 @@ function MDTDungeonEnemyMixin:OnClick(button, down)
                     end
                 end
             end
-            MDT:UpdateMap()
+            ODT:UpdateMap()
         else
-            MDT:ShowEnemyInfoFrame(self)
+            ODT:ShowEnemyInfoFrame(self)
         end
     end
 end
@@ -389,12 +389,12 @@ end
 local patrolPoints =  {}
 local patrolLines = {}
 
-function MDT:GetPatrolBlips()
+function ODT:GetPatrolBlips()
     return patrolPoints
 end
 
-function MDTDungeonEnemyMixin:DisplayPatrol(shown)
-    local scale = MDT:GetScale()
+function ODTDungeonEnemyMixin:DisplayPatrol(shown)
+    local scale = ODT:GetScale()
 
     --Hide all points/line
     for _,point in pairs(patrolPoints) do point:Hide() end
@@ -405,7 +405,7 @@ function MDTDungeonEnemyMixin:DisplayPatrol(shown)
         local firstWaypointBlip
         local oldWaypointBlip
         for patrolIdx,waypoint in ipairs(self.clone.patrol) do
-            patrolPoints[patrolIdx] = patrolPoints[patrolIdx] or MDT.main_frame.mapPanelFrame:CreateTexture("MDTDungeonPatrolPoint"..patrolIdx,"BACKGROUND")
+            patrolPoints[patrolIdx] = patrolPoints[patrolIdx] or ODT.main_frame.mapPanelFrame:CreateTexture("ODTDungeonPatrolPoint"..patrolIdx,"BACKGROUND")
 
 
             patrolPoints[patrolIdx]:SetDrawLayer("OVERLAY", 2)
@@ -413,12 +413,12 @@ function MDTDungeonEnemyMixin:DisplayPatrol(shown)
             patrolPoints[patrolIdx]:SetSize(4*scale,4*scale)
             patrolPoints[patrolIdx]:SetVertexColor(0,0.2,0.5,0.6)
             patrolPoints[patrolIdx]:ClearAllPoints()
-            patrolPoints[patrolIdx]:SetPoint("CENTER", MDT.main_frame.mapPanelTile1,"TOPLEFT",waypoint.x*scale,waypoint.y*scale)
+            patrolPoints[patrolIdx]:SetPoint("CENTER", ODT.main_frame.mapPanelTile1,"TOPLEFT",waypoint.x*scale,waypoint.y*scale)
             patrolPoints[patrolIdx].x = waypoint.x
             patrolPoints[patrolIdx].y = waypoint.y
             patrolPoints[patrolIdx]:Show()
 
-            patrolLines[patrolIdx] = patrolLines[patrolIdx] or MDT.main_frame.mapPanelFrame:CreateTexture("MDTDungeonPatrolLine"..patrolIdx,"BACKGROUND")
+            patrolLines[patrolIdx] = patrolLines[patrolIdx] or ODT.main_frame.mapPanelFrame:CreateTexture("ODTDungeonPatrolLine"..patrolIdx,"BACKGROUND")
             patrolLines[patrolIdx]:SetDrawLayer("OVERLAY", 1)
             patrolLines[patrolIdx]:SetTexture("Interface\\AddOns\\MythicDungeonTools\\Textures\\Square_White")
             patrolLines[patrolIdx]:SetVertexColor(0,0.2,0.5,0.6)
@@ -428,7 +428,7 @@ function MDTDungeonEnemyMixin:DisplayPatrol(shown)
             if oldWaypointBlip then
                 local startPoint, startRelativeTo, startRelativePoint, startX, startY = patrolPoints[patrolIdx]:GetPoint()
                 local endPoint, endRelativeTo, endRelativePoint, endX, endY = oldWaypointBlip:GetPoint()
-                DrawLine(patrolLines[patrolIdx], MDT.main_frame.mapPanelTile1, startX, startY, endX, endY, 1*scale, 1,"TOPLEFT")
+                DrawLine(patrolLines[patrolIdx], ODT.main_frame.mapPanelTile1, startX, startY, endX, endY, 1*scale, 1,"TOPLEFT")
                 patrolLines[patrolIdx]:Show()
             else
                 firstWaypointBlip = patrolPoints[patrolIdx]
@@ -439,7 +439,7 @@ function MDTDungeonEnemyMixin:DisplayPatrol(shown)
         if firstWaypointBlip and oldWaypointBlip then
             local startPoint, startRelativeTo, startRelativePoint, startX, startY = firstWaypointBlip:GetPoint()
             local endPoint, endRelativeTo, endRelativePoint, endX, endY = oldWaypointBlip:GetPoint()
-            DrawLine(patrolLines[1], MDT.main_frame.mapPanelTile1, startX, startY, endX, endY, 1*scale, 1,"TOPLEFT")
+            DrawLine(patrolLines[1], ODT.main_frame.mapPanelTile1, startX, startY, endX, endY, 1*scale, 1,"TOPLEFT")
             patrolLines[1]:Show()
         end
 
@@ -457,18 +457,18 @@ function MDTDungeonEnemyMixin:DisplayPatrol(shown)
 end
 
 local ranOnce
-function MDT:DisplayBlipTooltip(blip, shown)
+function ODT:DisplayBlipTooltip(blip, shown)
     if not ranOnce then
         --fix elvui skinning
-        MDT.tooltip:ClearAllPoints()
-        MDT.tooltip:SetPoint("TOPLEFT",UIParent,"BOTTOMRIGHT")
-        MDT.tooltip:SetPoint("BOTTOMRIGHT",UIParent,"BOTTOMRIGHT")
-        MDT.tooltip:Show()
-        MDT.tooltip:Hide()
+        ODT.tooltip:ClearAllPoints()
+        ODT.tooltip:SetPoint("TOPLEFT",UIParent,"BOTTOMRIGHT")
+        ODT.tooltip:SetPoint("BOTTOMRIGHT",UIParent,"BOTTOMRIGHT")
+        ODT.tooltip:Show()
+        ODT.tooltip:Hide()
         ranOnce = true
     end
 
-    local tooltip = MDT.tooltip
+    local tooltip = ODT.tooltip
     local data = blip.data
     if shown then
         tooltip.Model:SetCreature(data.id)
@@ -481,7 +481,7 @@ function MDT:DisplayBlipTooltip(blip, shown)
     end
 
     local boss = blip.data.isBoss or false
-    local health = MDT:CalculateEnemyHealth(boss,data.health,db.currentDifficulty,data.ignoreFortified)
+    local health = ODT:CalculateEnemyHealth(boss,data.health,db.currentDifficulty,data.ignoreFortified)
     local group = blip.clone.g and " "..string.format(L["(G %d)"],blip.clone.g) or ""
     --local upstairs = blip.clone.upstairs and CreateTextureMarkup("Interface\\MINIMAP\\MiniMap-PositionArrows", 16, 32, 16, 16, 0, 1, 0, 0.5,0,-50) or ""
     --[[
@@ -489,13 +489,13 @@ function MDT:DisplayBlipTooltip(blip, shown)
     ]]
     local occurence = (blip.data.isBoss and "") or blip.cloneIdx
 
-    local text = data.name.." "..occurence..group.."\n"..string.format(L["Level %d %s"],data.level,data.creatureType).."\n".. string.format(L["%s HP"],MDT:FormatEnemyHealth(health)).."\n"
-    local count = MDT:IsCurrentPresetTeeming() and data.teemingCount or data.count
-    text = text ..L["Forces"]..": ".. MDT:FormatEnemyForces(count)
+    local text = data.name.." "..occurence..group.."\n"..string.format(L["Level %d %s"],data.level,data.creatureType).."\n".. string.format(L["%s HP"],ODT:FormatEnemyHealth(health)).."\n"
+    local count = ODT:IsCurrentPresetTeeming() and data.teemingCount or data.count
+    text = text ..L["Forces"]..": ".. ODT:FormatEnemyForces(count)
     local reapingText
     if blip.data.reaping and db.MDI.enabled and preset.mdi.beguiling == 13 then
-        local reapingIcon = CreateTextureMarkup(MDT.reapingStatic[tostring(blip.data.reaping)].iconTexture, 32, 32, 16, 16, 0, 1, 0, 1,0,0) or ""
-        reapingText = L["Reaping"]..": "..reapingIcon.." ".. MDT.reapingStatic[tostring(blip.data.reaping)].name .. "\n"
+        local reapingIcon = CreateTextureMarkup(ODT.reapingStatic[tostring(blip.data.reaping)].iconTexture, 32, 32, 16, 16, 0, 1, 0, 1,0,0) or ""
+        reapingText = L["Reaping"]..": "..reapingIcon.." ".. ODT.reapingStatic[tostring(blip.data.reaping)].name .. "\n"
     end
     if reapingText then text = text .. "\n" .. reapingText end
     text = text .."\n\n["..L["Right click for more info"].."]"
@@ -503,8 +503,8 @@ function MDT:DisplayBlipTooltip(blip, shown)
 
     tooltip:ClearAllPoints()
     if db.tooltipInCorner then
-        tooltip:SetPoint("BOTTOMRIGHT", MDT.main_frame,"BOTTOMRIGHT",0,0)
-        tooltip:SetPoint("TOPLEFT", MDT.main_frame,"BOTTOMRIGHT",-tooltip.mySizes.x,tooltip.mySizes.y)
+        tooltip:SetPoint("BOTTOMRIGHT", ODT.main_frame,"BOTTOMRIGHT",0,0)
+        tooltip:SetPoint("TOPLEFT", ODT.main_frame,"BOTTOMRIGHT",-tooltip.mySizes.x,tooltip.mySizes.y)
     else
         --check for bottom clipping
         tooltip:ClearAllPoints()
@@ -513,13 +513,13 @@ function MDT:DisplayBlipTooltip(blip, shown)
         local bottomOffset = 0
         local rightOffset = 0
         local tooltipBottom = tooltip:GetBottom()
-        local mainFrameBottom = MDT.main_frame:GetBottom()
+        local mainFrameBottom = ODT.main_frame:GetBottom()
         if tooltipBottom<mainFrameBottom then
             bottomOffset = tooltip.mySizes.y
         end
         --right side clipping
         local tooltipRight = tooltip:GetRight()
-        local mainFrameRight = MDT.main_frame:GetRight()
+        local mainFrameRight = ODT.main_frame:GetRight()
         if tooltipRight>mainFrameRight then
             rightOffset = -(tooltip.mySizes.x+60)
         end
@@ -532,7 +532,7 @@ end
 
 
 
-function MDT:GetCurrentDevmodeBlip()
+function ODT:GetCurrentDevmodeBlip()
     for blipIdx,blip in pairs(blips) do
         if blip.devSelected then
             return blip
@@ -547,12 +547,12 @@ local function blipDevModeSetup(blip)
 
     local xOffset,yOffset
     blip:SetScript("OnMouseDown",function()
-        local x,y = MDT:GetCursorPosition()
-        local scale = MDT:GetScale()
+        local x,y = ODT:GetCursorPosition()
+        local scale = ODT:GetScale()
         x = x*(1/scale)
         y = y*(1/scale)
-        local nx = MDT.dungeonEnemies[db.currentDungeonIdx][blip.enemyIdx].clones[blip.cloneIdx].x
-        local ny = MDT.dungeonEnemies[db.currentDungeonIdx][blip.enemyIdx].clones[blip.cloneIdx].y
+        local nx = ODT.dungeonEnemies[db.currentDungeonIdx][blip.enemyIdx].clones[blip.cloneIdx].x
+        local ny = ODT.dungeonEnemies[db.currentDungeonIdx][blip.enemyIdx].clones[blip.cloneIdx].y
         xOffset = x-nx
         yOffset = y-ny
     end)
@@ -562,17 +562,17 @@ local function blipDevModeSetup(blip)
     end)
     blip:SetScript("OnDragStop", function()
         if not db.devModeBlipsMovable then return end
-        local x,y = MDT:GetCursorPosition()
-        local scale = MDT:GetScale()
+        local x,y = ODT:GetCursorPosition()
+        local scale = ODT:GetScale()
         x = x*(1/scale)
         y = y*(1/scale)
         x = x-xOffset
         y = y-yOffset
         blip:StopMovingOrSizing()
         blip:ClearAllPoints()
-        blip:SetPoint("CENTER", MDT.main_frame.mapPanelTile1,"TOPLEFT",x*scale,y*scale)
-        MDT.dungeonEnemies[db.currentDungeonIdx][blip.enemyIdx].clones[blip.cloneIdx].x = x
-        MDT.dungeonEnemies[db.currentDungeonIdx][blip.enemyIdx].clones[blip.cloneIdx].y = y
+        blip:SetPoint("CENTER", ODT.main_frame.mapPanelTile1,"TOPLEFT",x*scale,y*scale)
+        ODT.dungeonEnemies[db.currentDungeonIdx][blip.enemyIdx].clones[blip.cloneIdx].x = x
+        ODT.dungeonEnemies[db.currentDungeonIdx][blip.enemyIdx].clones[blip.cloneIdx].y = y
     end)
     local groupColors = {
         [1] = {1,0,0,1},
@@ -585,7 +585,7 @@ local function blipDevModeSetup(blip)
         if not db.devModeBlipsScrollable then return end
         if not blip.clone.g then
             local maxGroup = 0
-            for _,data in pairs(MDT.dungeonEnemies[db.currentDungeonIdx]) do
+            for _,data in pairs(ODT.dungeonEnemies[db.currentDungeonIdx]) do
                 for _,clone in pairs(data.clones) do
                     maxGroup = (clone.g and (clone.g>maxGroup)) and clone.g or maxGroup
                 end
@@ -607,11 +607,11 @@ end
 
 local emissaryIds = {[155432]=true,[155433]=true,[155434]=true}
 
-function MDTDungeonEnemyMixin:SetUp(data,clone)
-    local scale = MDT:GetScale()
+function ODTDungeonEnemyMixin:SetUp(data,clone)
+    local scale = ODT:GetScale()
     self:ClearAllPoints()
-    self:SetPoint("CENTER", MDT.main_frame.mapPanelTile1,"TOPLEFT",clone.x*scale,clone.y*scale)
-    self.normalScale = data.scale*(data.isBoss and 1.7 or 1)*(MDT.scaleMultiplier[db.currentDungeonIdx] or 1)*scale
+    self:SetPoint("CENTER", ODT.main_frame.mapPanelTile1,"TOPLEFT",clone.x*scale,clone.y*scale)
+    self.normalScale = data.scale*(data.isBoss and 1.7 or 1)*(ODT.scaleMultiplier[db.currentDungeonIdx] or 1)*scale
     self.normalScale = self.normalScale * 0.6
     self:SetSize(self.normalScale*13,self.normalScale*13)
     self:updateSizes(1)
@@ -620,7 +620,7 @@ function MDTDungeonEnemyMixin:SetUp(data,clone)
     if not data.corrupted then
         for k,v in pairs(blips) do
             --only check neighboring blips - saves performance on big maps
-            if ((clone.x-v.clone.x)^2+(clone.y-v.clone.y)^2<81) and MDT:DoFramesOverlap(self, v,5) then raise = max(raise,v:GetFrameLevel()+1) end
+            if ((clone.x-v.clone.x)^2+(clone.y-v.clone.y)^2<81) and ODT:DoFramesOverlap(self, v,5) then raise = max(raise,v:GetFrameLevel()+1) end
         end
     end
     self:SetFrameLevel(raise)
@@ -644,11 +644,11 @@ function MDTDungeonEnemyMixin:SetUp(data,clone)
         self.texture_DragLeft:SetRotation(-1.5708)
         self.texture_DragRight:SetRotation(1.5708)
         self.texture_DragUp:SetRotation(3.14159)
-        local riftOffsets = MDT:GetRiftOffsets()
+        local riftOffsets = ODT:GetRiftOffsets()
         self.adjustedX = riftOffsets and riftOffsets[self.data.id] and riftOffsets[self.data.id].x or clone.x
         self.adjustedY = riftOffsets and riftOffsets[self.data.id] and riftOffsets[self.data.id].y or clone.y
         self:ClearAllPoints()
-        self:SetPoint("CENTER", MDT.main_frame.mapPanelTile1,"TOPLEFT",self.adjustedX*scale,self.adjustedY*scale)
+        self:SetPoint("CENTER", ODT.main_frame.mapPanelTile1,"TOPLEFT",self.adjustedX*scale,self.adjustedY*scale)
         self:SetMovable(true)
         self.animatedLine = nil
         setUpMouseHandlersAwakened(self,clone,scale,riftOffsets)
@@ -672,7 +672,7 @@ function MDTDungeonEnemyMixin:SetUp(data,clone)
 end
 
 ---DungeonEnemies_IsAnyBlipMoving
-function MDT:DungeonEnemies_IsAnyBlipMoving()
+function ODT:DungeonEnemies_IsAnyBlipMoving()
     local isAnyMoving
     for blipIdx,blip in pairs(blips) do
         if blip:IsDragging() then
@@ -685,20 +685,20 @@ end
 
 ---DungeonEnemies_HideAllBlips
 ---Used to hide blips during scaling changes to the map
-function MDT:DungeonEnemies_HideAllBlips()
-    MDT.dungeonEnemies_framePools:ReleaseAll()
+function ODT:DungeonEnemies_HideAllBlips()
+    ODT.dungeonEnemies_framePools:ReleaseAll()
 end
 
-function MDT:DungeonEnemies_UpdateEnemies()
-    MDT.dungeonEnemies_framePools:ReleaseAll()
+function ODT:DungeonEnemies_UpdateEnemies()
+    ODT.dungeonEnemies_framePools:ReleaseAll()
     twipe(blips)
-    if not db then db = MDT:GetDB() end
-    local enemies = MDT.dungeonEnemies[db.currentDungeonIdx]
+    if not db then db = ODT:GetDB() end
+    local enemies = ODT.dungeonEnemies[db.currentDungeonIdx]
     if not enemies then return end
-    preset = MDT:GetCurrentPreset()
+    preset = ODT:GetCurrentPreset()
 
-    local riftOffsets = MDT:GetRiftOffsets()
-    local currentSublevel = MDT:GetCurrentSubLevel()
+    local riftOffsets = ODT:GetRiftOffsets()
+    local currentSublevel = ODT:GetCurrentSubLevel()
 
     for enemyIdx,data in pairs(enemies) do
         for cloneIdx,clone in pairs(data["clones"]) do
@@ -706,7 +706,7 @@ function MDT:DungeonEnemies_UpdateEnemies()
             if clone.sublevel == currentSublevel or (not clone.sublevel) then
                 --skip rifts that were dragged to another sublevel
                 if not (data.corrupted and riftOffsets and riftOffsets[data.id] and riftOffsets[data.id].sublevel) then
-                    local blip = MDT.dungeonEnemies_framePools:Acquire("MDTDungeonEnemyTemplate")
+                    local blip = ODT.dungeonEnemies_framePools:Acquire("ODTDungeonEnemyTemplate")
                     blip:SetUp(data,clone)
                     blip.enemyIdx = enemyIdx
                     blip.cloneIdx = cloneIdx
@@ -721,7 +721,7 @@ function MDT:DungeonEnemies_UpdateEnemies()
                 for enemyIdx,data in pairs(enemies) do
                     if data.id == npcId then
                         for cloneIdx,clone in pairs(data["clones"]) do
-                            local blip = MDT.dungeonEnemies_framePools:Acquire("MDTDungeonEnemyTemplate")
+                            local blip = ODT.dungeonEnemies_framePools:Acquire("ODTDungeonEnemyTemplate")
                             blip:SetUp(data,clone)
                             blip.enemyIdx = enemyIdx
                             blip.cloneIdx = cloneIdx
@@ -733,14 +733,14 @@ function MDT:DungeonEnemies_UpdateEnemies()
     end
 end
 
-function MDT:DungeonEnemies_CreateFramePools()
+function ODT:DungeonEnemies_CreateFramePools()
     db = self:GetDB()
-    MDT.dungeonEnemies_framePools = MDT.dungeonEnemies_framePools or CreateFramePoolCollection()
-    MDT.dungeonEnemies_framePools:CreatePool("Button", MDT.main_frame.mapPanelFrame, "MDTDungeonEnemyTemplate");
+    ODT.dungeonEnemies_framePools = ODT.dungeonEnemies_framePools or CreateFramePoolCollection()
+    ODT.dungeonEnemies_framePools:CreatePool("Button", ODT.main_frame.mapPanelFrame, "ODTDungeonEnemyTemplate");
 end
 
-function MDT:FindPullOfBlip(blip)
-    local preset = MDT:GetCurrentPreset()
+function ODT:FindPullOfBlip(blip)
+    local preset = ODT:GetCurrentPreset()
     local pulls = preset.value.pulls or {}
 
     for pullIdx, pull in ipairs(pulls) do
@@ -755,7 +755,7 @@ function MDT:FindPullOfBlip(blip)
 end
 
 
-function MDT:GetBlip(enemyIdx, cloneIdx, preset)
+function ODT:GetBlip(enemyIdx, cloneIdx, preset)
     for blipIdx,blip in pairs(blips) do
         if blip.enemyIdx == enemyIdx and blip.cloneIdx == cloneIdx then
             return blip
@@ -765,7 +765,7 @@ end
 
 ---DungeonEnemies_AddOrRemoveBlipToCurrentPull
 ---Adds or removes an enemy clone and all it's linked npcs to the currently selected pull
-function MDT:DungeonEnemies_AddOrRemoveBlipToCurrentPull(blip, add, ignoreGrouped,pulls,pull,ignoreUpdates)
+function ODT:DungeonEnemies_AddOrRemoveBlipToCurrentPull(blip, add, ignoreGrouped,pulls,pull,ignoreUpdates)
     local preset = self:GetCurrentPreset()
     local enemyIdx = blip.enemyIdx
     local cloneIdx = blip.cloneIdx
@@ -814,7 +814,7 @@ end
 
 ---DungeonEnemies_UpdateBlipColors
 ---Updates the colors of all selected blips of the specified pull
-function MDT:DungeonEnemies_UpdateBlipColors(pull, r, g, b,pulls)
+function ODT:DungeonEnemies_UpdateBlipColors(pull, r, g, b,pulls)
     pulls = pulls or preset.value.pulls
     local p = pulls[pull]
     for enemyIdx,clones in pairs(p) do
@@ -839,8 +839,8 @@ function MDT:DungeonEnemies_UpdateBlipColors(pull, r, g, b,pulls)
 end
 
 ---Updates the selected Enemies on the map and marks them according to their pull color
-function MDT:DungeonEnemies_UpdateSelected(pull,pulls)
-    preset = MDT:GetCurrentPreset()
+function ODT:DungeonEnemies_UpdateSelected(pull,pulls)
+    preset = ODT:GetCurrentPreset()
     pulls = pulls or preset.value.pulls
     --deselect all
     for _,blip in pairs(blips) do
@@ -863,7 +863,7 @@ function MDT:DungeonEnemies_UpdateSelected(pull,pulls)
     end
     --highlight all pull enemies
     for pullIdx,p in pairs(pulls) do
-        local r,g,b = MDT:DungeonEnemies_GetPullColor(pullIdx)
+        local r,g,b = ODT:DungeonEnemies_GetPullColor(pullIdx)
         for enemyIdx,clones in pairs(p) do
             if tonumber(enemyIdx) then
                 for _,cloneIdx in pairs(clones) do
@@ -895,33 +895,33 @@ function MDT:DungeonEnemies_UpdateSelected(pull,pulls)
             end
         end
     end
-    MDT:DrawAllHulls(pulls)
+    ODT:DrawAllHulls(pulls)
 end
 
 ---DungeonEnemies_SetPullColor
 ---Sets a custom color for a pull
-function MDT:DungeonEnemies_SetPullColor(pull, r, g, b)
-    preset = MDT:GetCurrentPreset()
-    preset.value.pulls[pull]["color"] = MDT:RGBToHex(r,g,b)
+function ODT:DungeonEnemies_SetPullColor(pull, r, g, b)
+    preset = ODT:GetCurrentPreset()
+    preset.value.pulls[pull]["color"] = ODT:RGBToHex(r,g,b)
 end
 
 ---DungeonEnemies_GetPullColor
 ---Returns the custom color for a pull
-function MDT:DungeonEnemies_GetPullColor(pull,pulls)
+function ODT:DungeonEnemies_GetPullColor(pull,pulls)
     pulls = pulls or preset.value.pulls
-    local r,g,b = MDT:HexToRGB(pulls[pull]["color"])
+    local r,g,b = ODT:HexToRGB(pulls[pull]["color"])
     if not r then
-        r,g,b = MDT:HexToRGB(db.defaultColor)
-        MDT:DungeonEnemies_SetPullColor(pull,r,g,b)
+        r,g,b = ODT:HexToRGB(db.defaultColor)
+        ODT:DungeonEnemies_SetPullColor(pull,r,g,b)
     end
     return r,g,b
 end
 
 ---DungeonEnemies_UpdateTeeming
 ---Updates visibility state of teeming blips
-function MDT:DungeonEnemies_UpdateTeeming()
-    preset = MDT:GetCurrentPreset()
-    local teeming = MDT:IsPresetTeeming(preset)
+function ODT:DungeonEnemies_UpdateTeeming()
+    preset = ODT:GetCurrentPreset()
+    local teeming = ODT:IsPresetTeeming(preset)
     for _,blip in pairs(blips) do
         if teeming then
             if blip.clone.negativeTeeming then
@@ -937,12 +937,12 @@ function MDT:DungeonEnemies_UpdateTeeming()
             end
         end
     end
-    MDT:DungeonEnemies_UpdateBlacktoothEvent()
+    ODT:DungeonEnemies_UpdateBlacktoothEvent()
 end
 
 ---DungeonEnemies_UpdateSeasonalAffix
 ---Updates visibility state and appearance of enemies related to the current seasonal affix
-function MDT:DungeonEnemies_UpdateSeasonalAffix()
+function ODT:DungeonEnemies_UpdateSeasonalAffix()
     --hide all beguiling and corrupted blips first
     for _,blip in pairs(blips) do
         if blip.data.corrupted then blip:Hide() end
@@ -966,7 +966,7 @@ end
 
 ---DungeonEnemies_UpdateBlacktoothEvent
 ---Updates visibility state of blacktooth event blips
-function MDT:DungeonEnemies_UpdateBlacktoothEvent()
+function ODT:DungeonEnemies_UpdateBlacktoothEvent()
     local week
     if db.MDI.enabled then
         week = preset.mdi.freehold or 1
@@ -988,9 +988,9 @@ function MDT:DungeonEnemies_UpdateBlacktoothEvent()
     end
 end
 
-function MDT:DungeonEnemies_UpdateBoralusFaction(faction)
-    preset = MDT:GetCurrentPreset()
-    local teeming = MDT:IsPresetTeeming(preset)
+function ODT:DungeonEnemies_UpdateBoralusFaction(faction)
+    preset = ODT:GetCurrentPreset()
+    local teeming = ODT:IsPresetTeeming(preset)
     for _,blip in pairs(blips) do
         if blip.clone.faction then
             --handle beguiling npcs here
@@ -1022,7 +1022,7 @@ function MDT:DungeonEnemies_UpdateBoralusFaction(faction)
     end
 end
 
-function MDT:DungeonEnemies_UpdateReaping()
+function ODT:DungeonEnemies_UpdateReaping()
     for _,blip in pairs(blips) do
         if blip.data.reaping then
             blip.texture_Reaping:Show()
@@ -1038,7 +1038,7 @@ end
 
 ---DungeonEnemies_UpdateInfested
 ---Updates which blips should display infested state based on preset.week
-function MDT:DungeonEnemies_UpdateInfested(week)
+function ODT:DungeonEnemies_UpdateInfested(week)
     week = preset.week%3
     if week == 0 then week = 3 end
     for _,blip in pairs(blips) do
@@ -1052,9 +1052,9 @@ end
 
 ---DungeonEnemies_UpdateInspiring
 ---Updates which blips should display inspiring state based on preset.week
-function MDT:DungeonEnemies_UpdateInspiring(week)
+function ODT:DungeonEnemies_UpdateInspiring(week)
     week = week or preset.week
-    local isInspiring = MDT:IsWeekInspiring(week)
+    local isInspiring = ODT:IsWeekInspiring(week)
     for _,blip in pairs(blips) do
         if blip.clone.inspiring and isInspiring then
             blip.texture_Indicator:SetVertexColor(1,1,0,1)
@@ -1067,7 +1067,7 @@ function MDT:DungeonEnemies_UpdateInspiring(week)
 end
 
 ---Frehold Crews
-MDT.freeholdCrews = {
+ODT.freeholdCrews = {
     [2] = {--blacktooth
         [129548] = true,
         [129529] = true,
@@ -1090,7 +1090,7 @@ MDT.freeholdCrews = {
 }
 ---DungeonEnemies_UpdateFreeholdCrew
 ---Updates the enemies in Freehold to reflect the weekly event of "joining" a crew i.e. disabling npcs of the crew
-function MDT:DungeonEnemies_UpdateFreeholdCrew(crewIdx)
+function ODT:DungeonEnemies_UpdateFreeholdCrew(crewIdx)
     --override crew with mdi data
     if db.MDI.enabled then
         crewIdx = (preset.mdi.freeholdJoined and preset.mdi.freehold) or nil
@@ -1105,7 +1105,7 @@ function MDT:DungeonEnemies_UpdateFreeholdCrew(crewIdx)
         return
     end
 
-    local crew = MDT.freeholdCrews[crewIdx]
+    local crew = ODT.freeholdCrews[crewIdx]
     for _,blip in pairs(blips) do
         if crew[blip.data.id] and not blip.clone.blacktoothEvent then
             blip:Disable()
@@ -1119,7 +1119,7 @@ function MDT:DungeonEnemies_UpdateFreeholdCrew(crewIdx)
     end
 end
 
-function MDT:IsNPCInPulls(poi)
+function ODT:IsNPCInPulls(poi)
     local week = self:GetEffectivePresetWeek()
     local data = self.dungeonEnemies[db.currentDungeonIdx]
     for enemyIdx,enemy in pairs(data) do
@@ -1127,15 +1127,15 @@ function MDT:IsNPCInPulls(poi)
             local included = false
             for cloneIdx,clone in pairs(enemy.clones) do
                 if clone.week[week] then
-                    return MDT:IsCloneInPulls(enemyIdx,cloneIdx)
+                    return ODT:IsCloneInPulls(enemyIdx,cloneIdx)
                 end
             end
         end
     end
 end
 
-function MDT:IsCloneInPulls(enemyIdx, cloneIdx)
-    local pulls = MDT:GetCurrentPreset().value.pulls
+function ODT:IsCloneInPulls(enemyIdx, cloneIdx)
+    local pulls = ODT:GetCurrentPreset().value.pulls
     local numClones = 0
     for _,pull in pairs(pulls) do
         if pull[enemyIdx] then
@@ -1155,7 +1155,7 @@ end
 
 local countCache = {}
 ---returns count, maxCountNormal, maxCountTeeming, teemingCount
-function MDT:GetEnemyForces(npcId)
+function ODT:GetEnemyForces(npcId)
     if countCache[npcId] then
         return countCache[npcId].count,countCache[npcId].maxCountNormal,countCache[npcId].maxCountTeeming,countCache[npcId].teemingCount
     else
@@ -1193,8 +1193,8 @@ end
 
 ---tries to retrieve npc name by npcId
 ---only looks for npcs in the current dungeon
-function MDT:GetNPCNameById(npcId)
-    local data = MDT.dungeonEnemies[db.currentDungeonIdx]
+function ODT:GetNPCNameById(npcId)
+    local data = ODT.dungeonEnemies[db.currentDungeonIdx]
     if data then
         for _,enemy in pairs(data) do
             if enemy.id == npcId then
@@ -1207,11 +1207,11 @@ end
 ---updates the enemy tables with new count and teemingCount or displayId values
 ---data is retrieved with the the get_count.py or get_displayids python script
 ---data needs to afterwards be exported manually for every dungeon
-function MDT:UpdateDungeonData(dungeonData)
+function ODT:UpdateDungeonData(dungeonData)
 
     local function printDungeonName(shouldPrint,dungeonIdx)
         if shouldPrint then
-            print("-----", MDT:GetDungeonName(dungeonIdx))
+            print("-----", ODT:GetDungeonName(dungeonIdx))
         end
         return false
     end
@@ -1219,7 +1219,7 @@ function MDT:UpdateDungeonData(dungeonData)
     for dungeonIdx,newData in pairs(dungeonData) do
 
         --dungeon total count changes
-        local totalCount = MDT.dungeonTotalCount[dungeonIdx]
+        local totalCount = ODT.dungeonTotalCount[dungeonIdx]
         if newData[0] and (newData[0].count~=totalCount.normal or newData[0].teeming_count~=totalCount.teeming) then
             print("TOTAL ",totalCount.normal,totalCount.teeming,">>>",newData[0].count,newData[0].teeming_count)
             totalCount.normal = newData[0].count
@@ -1228,7 +1228,7 @@ function MDT:UpdateDungeonData(dungeonData)
 
         --enemy changes
         local shouldPrintDungeonName = true
-        local enemyData = MDT.dungeonEnemies[dungeonIdx]
+        local enemyData = ODT.dungeonEnemies[dungeonIdx]
         if enemyData then
             for _,enemy in pairs(enemyData) do
                 --ignore enchanted emissary (gives count but can almost never pull it off, keep 0 to keep it simple)
@@ -1275,16 +1275,16 @@ end
 --Dungeon(name='AtalDazar', idx=15, npcIds=[134739, 161241, 136347]),
 --    Dungeon(name='RandomDungeon', idx=14, npcIds=[161241, 134739, 136347]),
 --]
-function MDT:ExportNPCIdsWithoutDisplayIds()
+function ODT:ExportNPCIdsWithoutDisplayIds()
     local output = "dungeons = [\n"
-    for idx = 15, MDT:GetNumDungeons() do
+    for idx = 15, ODT:GetNumDungeons() do
         local shouldAddDungeonText = true
-        local enemyData = MDT.dungeonEnemies[idx]
+        local enemyData = ODT.dungeonEnemies[idx]
         if enemyData then
             for _,enemy in pairs(enemyData) do
                 if not enemy.displayId then
                     if shouldAddDungeonText then
-                        output = output.."Dungeon(name='".. MDT:GetDungeonName(idx).."', idx=".. idx..", npcIds=["
+                        output = output.."Dungeon(name='".. ODT:GetDungeonName(idx).."', idx=".. idx..", npcIds=["
                         shouldAddDungeonText = false
                     end
                     output = output..enemy.id..", "
@@ -1294,14 +1294,14 @@ function MDT:ExportNPCIdsWithoutDisplayIds()
         end
     end
     output = output.."]"
-    MDT:HideAllDialogs()
-    MDT.main_frame.ExportFrame:Show()
-    MDT.main_frame.ExportFrame:ClearAllPoints()
-    MDT.main_frame.ExportFrame:SetPoint("CENTER", MDT.main_frame,"CENTER",0,50)
-    MDT.main_frame.ExportFrameEditbox:SetText(output)
-    MDT.main_frame.ExportFrameEditbox:HighlightText(0, string.len(output))
-    MDT.main_frame.ExportFrameEditbox:SetFocus()
-    MDT.main_frame.ExportFrameEditbox:SetLabel("NPC ids without displayId")
+    ODT:HideAllDialogs()
+    ODT.main_frame.ExportFrame:Show()
+    ODT.main_frame.ExportFrame:ClearAllPoints()
+    ODT.main_frame.ExportFrame:SetPoint("CENTER", ODT.main_frame,"CENTER",0,50)
+    ODT.main_frame.ExportFrameEditbox:SetText(output)
+    ODT.main_frame.ExportFrameEditbox:HighlightText(0, string.len(output))
+    ODT.main_frame.ExportFrameEditbox:SetFocus()
+    ODT.main_frame.ExportFrameEditbox:SetLabel("NPC ids without displayId")
 end
 
 
@@ -1325,8 +1325,8 @@ local function ArrayRemove(t, fnKeep)
 end
 
 ---removes enemies of the current dungeon without any clones
-function MDT:CleanEnemyData(dungeonIdx)
-    local enemies = MDT.dungeonEnemies[dungeonIdx]
+function ODT:CleanEnemyData(dungeonIdx)
+    local enemies = ODT.dungeonEnemies[dungeonIdx]
     ArrayRemove(enemies,function (t, i , j)
         return #t[i].clones>0
     end)

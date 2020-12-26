@@ -1,8 +1,8 @@
 local dungeonIndex = 1
 local nerfMultiplier = 0.834
 local pi = math.pi
-MDT.dungeonTotalCount[dungeonIndex] = { normal=300, teeming=360, teemingEnabled=true}
-MDT.dungeonBosses[dungeonIndex] = {--Black Rook Hold
+ODT.dungeonTotalCount[dungeonIndex] = { normal=300, teeming=360, teemingEnabled=true}
+ODT.dungeonBosses[dungeonIndex] = {--Black Rook Hold
 	[1] = {
 		[1] = {
             ["name"] = "Amalgam of Souls",
@@ -56,7 +56,7 @@ MDT.dungeonBosses[dungeonIndex] = {--Black Rook Hold
         },
 	},
 }
-MDT.dungeonEnemies[dungeonIndex] = { --Black Rook Hold
+ODT.dungeonEnemies[dungeonIndex] = { --Black Rook Hold
 	[1] = {
         ["name"] = "Ghostly Retainer",
         ["health"] = 14819297*nerfMultiplier,

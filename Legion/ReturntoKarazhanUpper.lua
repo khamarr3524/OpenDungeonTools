@@ -1,8 +1,8 @@
 local dungeonIndex = 10
 local pi = math.pi
-MDT.dungeonTotalCount[dungeonIndex] = {normal=169,teeming=202,teemingEnabled=true}
+ODT.dungeonTotalCount[dungeonIndex] = {normal=169,teeming=202,teemingEnabled=true}
 local nerfMultiplier = 0.74 --npcs got nerfed by 26% compared against m0 values, bosses unchanged
-MDT.dungeonBosses[dungeonIndex] = {--Upper Karazhan
+ODT.dungeonBosses[dungeonIndex] = {--Upper Karazhan
 	[3] = {
 		[1] = {
             ["name"] = "The Curator",
@@ -57,7 +57,7 @@ MDT.dungeonBosses[dungeonIndex] = {--Upper Karazhan
 	},
 }
 
-MDT.dungeonEnemies[dungeonIndex] = {
+ODT.dungeonEnemies[dungeonIndex] = {
 	[1] = {
         ["name"] = "Forlorn Spirit",
         ["health"] = 21771241*nerfMultiplier, --HP IS TOO HIGH

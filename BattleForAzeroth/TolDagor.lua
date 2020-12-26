@@ -1,7 +1,7 @@
-local MDT = MDT
-local L = MDT.L
+local ODT = ODT
+local L = ODT.L
 local dungeonIndex = 23
-MDT.mapInfo[dungeonIndex] = {
+ODT.mapInfo[dungeonIndex] = {
     viewportPositionOverrides =
     {
         [1] = {
@@ -41,9 +41,9 @@ MDT.mapInfo[dungeonIndex] = {
         };
     };
 };
-MDT.dungeonTotalCount[dungeonIndex] = {normal=400,teeming=479,teemingEnabled=true}
+ODT.dungeonTotalCount[dungeonIndex] = {normal=400,teeming=479,teemingEnabled=true}
 
-MDT.mapPOIs[dungeonIndex] = {
+ODT.mapPOIs[dungeonIndex] = {
     [1] = {
         [1] = {
             ["y"] = -262.48238754636;
@@ -578,7 +578,7 @@ MDT.mapPOIs[dungeonIndex] = {
     };
 };
 
-MDT.dungeonEnemies[dungeonIndex] = {
+ODT.dungeonEnemies[dungeonIndex] = {
     [1] = {
         ["clones"] = {
             [1] = {

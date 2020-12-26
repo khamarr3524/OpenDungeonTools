@@ -1,11 +1,11 @@
 <Bindings>
-    <Binding name="MDTTOGGLE" runOnUp="false" category="Mythic Dungeon Tools">
-      MDT:ShowInterface()
+    <Binding name="ODTTOGGLE" runOnUp="false" category="Open Dungeon Tools">
+      ODT:ShowInterface()
     </Binding>
-    <Binding name="MDTNPC" runOnUp="false" category="Mythic Dungeon Tools">
-        MDT:AddCloneAtCursorPosition()
+    <Binding name="ODTNPC" runOnUp="false" category="Open Dungeon Tools">
+        ODT:AddCloneAtCursorPosition()
     </Binding>
-    <Binding name="MDTWAYPOINT" runOnUp="false" category="Mythic Dungeon Tools">
-        MDT:AddPatrolWaypointAtCursorPosition()
+    <Binding name="ODTWAYPOINT" runOnUp="false" category="Open Dungeon Tools">
+        ODT:AddPatrolWaypointAtCursorPosition()
     </Binding>
 </Bindings>

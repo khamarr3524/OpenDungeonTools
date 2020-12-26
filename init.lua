@@ -1,3 +1,3 @@
-local AddonName, MDT = ...
-_G["MDT"] = MDT
-MDT.L = {}
+local AddonName, ODT = ...
+_G["ODT"] = ODT
+ODT.L = {}

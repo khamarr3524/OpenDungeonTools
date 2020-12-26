@@ -1,8 +1,8 @@
 local dungeonIndex = 11
-MDT.dungeonTotalCount[dungeonIndex] = {normal=275,teeming=329,teemingEnabled=true}
+ODT.dungeonTotalCount[dungeonIndex] = {normal=275,teeming=329,teemingEnabled=true}
 local nerfMultiplier = 1
 local pi = math.pi
-MDT.dungeonBosses[dungeonIndex] = {--Seat of the Triumvirate
+ODT.dungeonBosses[dungeonIndex] = {--Seat of the Triumvirate
 	[1] = {	
 		[1] = {
             ["name"] = "Zuraal the Ascended",
@@ -50,7 +50,7 @@ MDT.dungeonBosses[dungeonIndex] = {--Seat of the Triumvirate
         },
 	},
 }
-MDT.dungeonEnemies[dungeonIndex] = {
+ODT.dungeonEnemies[dungeonIndex] = {
 	[1] = {
         ["name"] = "Void Discharge",
         ["health"] = 7015052*nerfMultiplier,

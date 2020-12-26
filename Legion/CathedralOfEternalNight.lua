@@ -1,8 +1,8 @@
 local dungeonIndex = 2
 local pi = math.pi
 local nerfMultiplier = 1
-MDT.dungeonTotalCount[dungeonIndex] = {normal=305,teeming=335,teemingEnabled=true}
-MDT.dungeonBosses[dungeonIndex] = { --Cathedral of Eternal Night
+ODT.dungeonTotalCount[dungeonIndex] = {normal=305,teeming=335,teemingEnabled=true}
+ODT.dungeonBosses[dungeonIndex] = { --Cathedral of Eternal Night
 	[2] = {
 		[1] = {
 			["name"] = "Agronox",
@@ -52,7 +52,7 @@ MDT.dungeonBosses[dungeonIndex] = { --Cathedral of Eternal Night
 		},
 	},
 }
-MDT.dungeonEnemies[dungeonIndex] = { --Cathedral of Eternal Night
+ODT.dungeonEnemies[dungeonIndex] = { --Cathedral of Eternal Night
 	[1] = {
 		["name"] = "Felguard Destroyer",
 		["health"] = 14731610,

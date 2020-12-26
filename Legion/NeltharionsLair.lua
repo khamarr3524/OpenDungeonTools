@@ -1,8 +1,8 @@
 local dungeonIndex = 8
 local nerfMultiplier = 1
 local pi = math.pi
-MDT.dungeonTotalCount[dungeonIndex] = {normal=220,teeming=264,teemingEnabled=true}
-MDT.dungeonBosses[dungeonIndex] = {
+ODT.dungeonTotalCount[dungeonIndex] = {normal=220,teeming=264,teemingEnabled=true}
+ODT.dungeonBosses[dungeonIndex] = {
 	[1] = {
 		[1] = {
             ["name"] = "Rokmora",
@@ -39,7 +39,7 @@ MDT.dungeonBosses[dungeonIndex] = {
         },
 	},
 }
-MDT.dungeonEnemies[dungeonIndex] = {
+ODT.dungeonEnemies[dungeonIndex] = {
 	[1] = {
 		["name"] = "Vileshard Crawler",
 		["health"] = 5129757,

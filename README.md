@@ -22,7 +22,7 @@ Features
 Slash Commands
 ------------------
 - /mythicdungeontools
-- /mdt
+- /ODT
 
 Download on curseforge: https://www.curseforge.com/wow/addons/mythic-dungeon-tools
 
